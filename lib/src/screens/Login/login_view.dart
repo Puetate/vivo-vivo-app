@@ -4,22 +4,26 @@ import 'package:flutter/services.dart';
 import 'package:vivo_vivo_app/src/screens/Login/components/button_register.dart';
 import 'package:vivo_vivo_app/src/screens/Login/components/button_rembember_password.dart';
 import 'package:vivo_vivo_app/src/screens/Login/components/logo.dart';
+import 'package:vivo_vivo_app/src/screens/Login/controllers/login_controller.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/app_validations.dart';
+import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
+  static const String id = "login_view";
 
   @override
   State<LoginView> createState() => _LoginViewState();
 }
 
 class _LoginViewState extends State<LoginView> {
-  var user;
-  final bool _loading = false;
+  late final LoginController loginController;
+  bool _loading = false;
   bool isSwitched = false;
-  final bool _isNotConnect = false;
+  bool _passwordVisible = false;
+  // final bool _isNotConnect = false;
 
   final email = TextEditingController();
   final password = TextEditingController();
@@ -27,9 +31,15 @@ class _LoginViewState extends State<LoginView> {
   String userNameValue = "";
   String passwordValue = "";
   String textButtonSesion = "Iniciar Sesión";
+  String saveSesionText = "Guardar Sesión";
   final formKey = GlobalKey<FormState>();
   // UserProvider userProvider;
-  bool _passwordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loginController = LoginController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +82,10 @@ class _LoginViewState extends State<LoginView> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                         Padding(
+                        Padding(
                           padding: const EdgeInsets.only(top: 15, bottom: 15),
-                          child: Text(
-                            "Bienvenido",
-                            style: Styles.textStyleWelcomeTitle),
+                          child: Text("Bienvenido",
+                              style: Styles.textStyleWelcomeTitle),
                         ),
                         Form(
                           key: formKey,
@@ -162,8 +171,8 @@ class _LoginViewState extends State<LoginView> {
                                   userNameValue = email.text;
                                   passwordValue = password.text;
 
-                                  // _showHomePage(
-                                  //     context, userNameValue, passwordValue);
+                                  showHomePage(
+                                      context, userNameValue, passwordValue);
                                 }),
                             const SizedBox(
                               height: 15,
@@ -171,7 +180,7 @@ class _LoginViewState extends State<LoginView> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text("Guardar Sesión"),
+                                Text(saveSesionText),
                                 const Padding(
                                     padding: EdgeInsets.only(right: 15)),
                                 Checkbox(
@@ -194,7 +203,7 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ),
-        if (_isNotConnect)
+        /* if (_isNotConnect)
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -208,9 +217,41 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ],
             ),
-          ),
+          ), */
       ]),
     );
   }
-}
 
+  void showHomePage(context, String userName, String password) async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState?.save();
+      if (!_loading) {
+        try {
+          setState(() => initLoading());
+          await loginController.showHomePage(
+              context, userName, password, isSwitched);
+        } catch (e) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(MySnackBars.errorConnectionSnackBar());
+
+          setState(() => finalLoading());
+        }
+      }
+    }
+  }
+
+  void finalLoading() {
+    _loading = false;
+    textButtonSesion = "Iniciar Sesión";
+  }
+
+  void initLoading() {
+    _loading = true;
+    textButtonSesion = "Iniciando";
+  }
+  
+  Future<void> openUserPreferences(context) async {
+    WidgetsFlutterBinding.ensureInitialized();
+    loginController.openPreferences(context);
+  }
+}
