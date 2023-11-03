@@ -11,7 +11,7 @@ class Api {
   static void configureDio() async {
     _dio.options.baseUrl = dotenv.env['BASE_URL']!;
     _dio.options.headers = {
-      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.contentTypeHeader: "application/json; charset=utf-8",
     };
   }
 
@@ -21,6 +21,18 @@ class Api {
         path,
       );
 
+      return resp.data;
+    } catch (e) {
+      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
+          .showSnackBar(MySnackBars.errorConnectionSnackBar());
+    }
+  }
+
+  static Future get(String path, Map<String, dynamic> data) async {
+    final formData = FormData.fromMap(data);
+
+    try {
+      final resp = await _dio.get(path, data: formData);
       return resp.data;
     } catch (e) {
       ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
