@@ -1,4 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:vivo_vivo_app/src/data/datasource/api_repository_user_impl.dart';
+import 'package:vivo_vivo_app/src/domain/models/person.dart';
+import 'package:vivo_vivo_app/src/domain/models/person_disability.dart';
+import 'package:vivo_vivo_app/src/domain/models/person_info.dart';
+import 'package:vivo_vivo_app/src/domain/models/user.dart';
+import 'package:vivo_vivo_app/src/screens/Register/step_one_register_view.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 
 class ButtonRegister extends StatelessWidget {
@@ -17,10 +25,8 @@ class ButtonRegister extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton(
-                  style:
-                      TextButton.styleFrom(backgroundColor: Styles.blur),
-                  onPressed:
-                      () => /* _showRegisterPage(contextPushScreen) */ (),
+                  style: TextButton.styleFrom(backgroundColor: Styles.blur),
+                  onPressed: () => _showRegisterPage(context),
                   child: Padding(
                     padding: const EdgeInsets.all(6.0),
                     child: Text(
@@ -34,5 +40,8 @@ class ButtonRegister extends StatelessWidget {
       ],
     );
   }
-}
 
+  Future<void> _showRegisterPage(BuildContext context) async {
+    Navigator.of(context).pushNamed(StepOneRegisterView.id);
+  }
+}

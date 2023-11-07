@@ -22,8 +22,8 @@ class SocketProvider {
               .setTransports(['websocket'])
               .enableAutoConnect()
               .enableReconnection()
-              .setQuery({'personId': user.person.id})
-              .setExtraHeaders({'personId': user.person.id}) // optional
+              .setQuery({'personId': user.person!.id})
+              .setExtraHeaders({'personId': user.person!.id}) // optional
               .build());
 
       _socket.connect();

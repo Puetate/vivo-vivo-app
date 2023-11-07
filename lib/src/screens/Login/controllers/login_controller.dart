@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vivo_vivo_app/src/commons/create_credentials.dart';
 import 'dart:convert';
 
 import 'package:vivo_vivo_app/src/commons/shared_preferences.dart';
 import 'package:vivo_vivo_app/src/data/datasource/api_repository_user_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/user.dart';
-import 'package:vivo_vivo_app/src/global/global_variable.dart';
+// import 'package:vivo_vivo_app/src/global/global_variable.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Home/home_view.dart';
-import 'package:vivo_vivo_app/src/utils/snackbars.dart';
+// import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
 class LoginController {
   late final Function(bool state) onStateConnect;
@@ -18,36 +19,29 @@ class LoginController {
     userService = ApiRepositoryUserImpl();
   }
 
-  Future<void> showHomePage(
-      context, String userName, String password, bool saveCredentials) async {
+  Future<void> showHomePage(BuildContext context, String userName,
+      String password, bool saveCredentials) async {
     try {
       UserProvider userProvider = context.read<UserProvider>();
-      Map<String, dynamic> credentials = createCredentials(userName, password);
-      var userData = await userService.getUser(credentials);
+      var userData =
+          await userService.getUser(createCredentials(userName, password));
       if (userData == null) {
-        ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-            .showSnackBar(MySnackBars.errorConnectionSnackBar());
+        // ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
+        //     .showSnackBar(MySnackBars.errorConnectionSnackBar());
+        onStateConnect(false);
         return;
         /* ScaffoldMessenger.of(context).showSnackBar(MySnackBars.failureSnackBar(
             'Usuario o Contraseña Incorrecta.\nPor favor intente de nuevo!',
-            'Incorrecto!')); 
-
-        setState(() {
-          _loading = false;
-          textButtonSesion = "Iniciar Sesión";
-        });*/
+            'Incorrecto!')); */
       }
       await userProvider.setUser(userData.getUser, userData.getToken);
       if (saveCredentials) (userData.getUser, userData.getToken);
       Navigator.of(context).pushReplacementNamed(HomeView.id);
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-      /* setState(() {
-        _loading = false;
-        textButtonSesion = "Iniciar Sesión";
-      }); */
+      onStateConnect(false);
+      // ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
+      //     .showSnackBar(MySnackBars.errorConnectionSnackBar());
     }
   }
 

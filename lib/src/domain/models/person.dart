@@ -1,73 +1,50 @@
-// To parse this JSON data, do
-//
-//     final person = personFromJson(jsonString);
-
-import 'dart:convert';
-
-Person personFromJson(String str) => Person.fromJson(json.decode(str));
-
-String personToJson(Person data) => json.encode(data.toJson());
+import 'package:vivo_vivo_app/src/domain/models/person_disability.dart';
+import 'package:vivo_vivo_app/src/domain/models/person_info.dart';
 
 class Person {
-    String id;
-    String firstName;
-    String middleName;
-    String lastName;
-    String idCard;
-    String phone;
-    DateTime birthDate;
-    String address;
-    String gender;
-    String urlImage;
-    String ethnic;
-    bool disability;
-    String maritalStatus;
+  String? id;
+  String firstName;
+  String middleName;
+  String lastNames;
+  String dni;
+  dynamic avatar;
+  PersonInfo? personInfo;
+  PersonDisability? personDisability;
+  DateTime? updatedAt;
+  DateTime? createdAt;
 
-    Person({
-        required this.id,
-        required this.firstName,
-        required this.middleName,
-        required this.lastName,
-        required this.idCard,
-        required this.phone,
-        required this.birthDate,
-        required this.address,
-        required this.gender,
-        required this.urlImage,
-        required this.ethnic,
-        required this.disability,
-        required this.maritalStatus,
-    });
+  Person({
+    this.id,
+    required this.firstName,
+    required this.middleName,
+    required this.lastNames,
+    required this.dni,
+    required this.avatar,
+    this.personDisability,
+    this.personInfo,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-    factory Person.fromJson(Map<String, dynamic> json) => Person(
+  factory Person.fromJson(Map<String, dynamic> json) => Person(
         id: json["_id"],
         firstName: json["firstName"],
         middleName: json["middleName"],
-        lastName: json["lastName"],
-        idCard: json["idCard"],
-        phone: json["phone"],
-        birthDate: DateTime.parse(json["birthDate"]),
-        address: json["address"],
-        gender: json["gender"],
-        urlImage: json["urlImage"],
-        ethnic: json["ethnic"],
-        disability: json["disability"],
-        maritalStatus: json["maritalStatus"],
-    );
+        lastNames: json["lastNames"],
+        dni: json["dni"],
+        avatar: json["urlImage"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+      );
 
-    Map<String, dynamic> toJson() => {
-        "_id": id,
+  Map<String, dynamic> toJson() => {
+        // "_id": id,
         "firstName": firstName,
         "middleName": middleName,
-        "lastName": lastName,
-        "idCard": idCard,
-        "phone": phone,
-        "birthDate": birthDate.toIso8601String(),
-        "address": address,
-        "gender": gender,
-        "urlImage": urlImage,
-        "ethnic": ethnic,
-        "disability": disability,
-        "maritalStatus": maritalStatus,
-    };
+        "lastNames": lastNames,
+        "dni": dni,
+        "urlImage": avatar,
+        /* "createdAt": (createdAt != null) ? createdAt!.toIso8601String() : null,
+        "updatedAt": (updatedAt != null) ? updatedAt!.toIso8601String() : null, */
+      };
 }

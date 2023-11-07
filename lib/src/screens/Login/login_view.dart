@@ -8,7 +8,7 @@ import 'package:vivo_vivo_app/src/screens/Login/controllers/login_controller.dar
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/app_validations.dart';
-import 'package:vivo_vivo_app/src/utils/snackbars.dart';
+// import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -39,6 +39,9 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
     loginController = LoginController();
+    loginController.onStateConnect =
+        (state) => setLoading(state, "Iniciar Sesión");
+    //openUserPreferences(context);
   }
 
   @override
@@ -222,20 +225,14 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void showHomePage(context, String userName, String password) async {
+  void showHomePage(
+      BuildContext context, String userName, String password) async {
     if (formKey.currentState!.validate()) {
       formKey.currentState?.save();
       if (!_loading) {
-        try {
-          setState(() => initLoading());
-          await loginController.showHomePage(
-              context, userName, password, isSwitched);
-        } catch (e) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(MySnackBars.errorConnectionSnackBar());
-
-          setState(() => finalLoading());
-        }
+        setState(() => initLoading());
+        await loginController.showHomePage(
+            context, userName, password, isSwitched);
       }
     }
   }
@@ -245,11 +242,16 @@ class _LoginViewState extends State<LoginView> {
     textButtonSesion = "Iniciar Sesión";
   }
 
+  void setLoading(bool state, String textSesion) {
+    _loading = state;
+    textButtonSesion = textSesion;
+  }
+
   void initLoading() {
     _loading = true;
     textButtonSesion = "Iniciando";
   }
-  
+
   Future<void> openUserPreferences(context) async {
     WidgetsFlutterBinding.ensureInitialized();
     loginController.openPreferences(context);

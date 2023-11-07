@@ -1,67 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dart:io';
+import 'package:vivo_vivo_app/src/domain/api/dio.config.dart';
 
 import 'package:vivo_vivo_app/src/global/global_variable.dart';
 import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
+class ResponseResult<T> {
+  final T? data;
+  final Object? error;
+
+  ResponseResult({this.data, this.error});
+}
+
 class Api {
-  static final Dio _dio = Dio();
-  static void configureDio() async {
-    _dio.options.baseUrl = dotenv.env['BASE_URL']!;
-    _dio.options.headers = {
-      HttpHeaders.contentTypeHeader: "application/json; charset=utf-8",
-    };
-  }
+  static final Dio _dio = DioSingleton.getInstance();
 
-  static Future httpGet(String path) async {
-    try {
-      final resp = await _dio.get(
-        path,
-      );
-
-      return resp.data;
-    } catch (e) {
-      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-    }
+  static Future httpGet<T>(String path) async {
+    return await _dio
+        .get(
+          path,
+        )
+        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .onError(
+            (error, stackTrace) => (ResponseResult(data: null, error: error)));
   }
 
   static Future get(String path, Map<String, dynamic> data) async {
     final formData = FormData.fromMap(data);
 
-    try {
-      final resp = await _dio.get(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-    }
+    return await _dio
+        .get(
+          path,
+          data: formData,
+        )
+        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .onError(
+            (error, stackTrace) => (ResponseResult(data: null, error: error)));
   }
 
   static Future post(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
+    return await _dio
+        .post(path, data: data)
+        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .onError(
+            (error, stackTrace) => (ResponseResult(data: null, error: error)));
+  }
 
-    try {
-      final resp = await _dio.post(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-    }
+  static Future postWithFile(String path, Map<String, dynamic> data) async {
+    final formData = FormData.fromMap(data, ListFormat.pipes);
+
+    return await _dio
+        .post(path, data: formData)
+        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .onError(
+            (error, stackTrace) => (ResponseResult(data: null, error: error)));
   }
 
   static Future put(String path, Map<String, dynamic> data) async {
     final formData = FormData.fromMap(data);
 
-    try {
-      final resp = await _dio.put(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-    }
+    return await _dio
+        .put(path, data: formData)
+        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .onError(
+            (error, stackTrace) => (ResponseResult(data: null, error: error)));
   }
 
   static Future delete(String path, Map<String, dynamic> data) async {
@@ -74,5 +76,11 @@ class Api {
       ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
           .showSnackBar(MySnackBars.errorConnectionSnackBar());
     }
+  }
+
+  static void checkException(DioException e) {
+    String message = e.response!.data['error'];
+    ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
+        .showSnackBar(MySnackBars.failureSnackBar(message, "Error!"));
   }
 }

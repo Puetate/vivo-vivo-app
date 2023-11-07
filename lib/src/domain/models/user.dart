@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final user = userFromJson(jsonString);
+
 import 'dart:convert';
 
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
@@ -7,41 +11,45 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 String userToJson(User data) => json.encode(data.toJson());
 
 class User {
-    String id;
-    String userName;
-    String email;
-    String password;
-    String userType;
-    Person person;
-    String idOneSignal;
+  String? id;
+  String username;
+  String email;
+  String password;
+  Person? person;
+  int? status;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
-    User({
-        required this.id,
-        required this.userName,
-        required this.email,
-        required this.password,
-        required this.userType,
-        required this.person,
-        required this.idOneSignal,
-    });
+  User({
+    this.id,
+    required this.username,
+    required this.email,
+    required this.password,
+    this.person,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-    factory User.fromJson(Map<String, dynamic> json) => User(
+  factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["_id"],
-        userName: json["userName"],
+        username: json["username"],
         email: json["email"],
         password: json["password"],
-        userType: json["userType"],
         person: Person.fromJson(json["person"]),
-        idOneSignal: json["idOneSignal"],
-    );
+        status: json["status"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "_id": id,
-        "userName": userName,
+        "username": username,
         "email": email,
         "password": password,
-        "userType": userType,
-        "person": person.toJson(),
-        "idOneSignal": idOneSignal,
-    };
+        "person": person!.toJson(),
+        "status": status,
+        "createdAt": (createdAt != null) ? createdAt!.toIso8601String() : null,
+        "updatedAt": (updatedAt != null) ? updatedAt!.toIso8601String() : null,
+      };
 }
