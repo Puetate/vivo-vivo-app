@@ -17,6 +17,7 @@ class DioSingleton {
         headers: {
           HttpHeaders.contentTypeHeader: "application/json; charset=utf-8",
         },
+        receiveTimeout: const Duration(seconds: 10)
       ),
     );
 
@@ -31,7 +32,7 @@ class DioSingleton {
         handler.next(response);
       },
       onError: (DioException error, handler) {
-        final message = error.response?.data['message'] ?? '';
+        final message = error.response?.data['error'] ?? '';
 
         ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
             .showSnackBar(MySnackBars.failureSnackBar(message,

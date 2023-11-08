@@ -37,11 +37,11 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-    super.initState();
-    loginController = LoginController();
-    loginController.onStateConnect =
-        (state) => setLoading(state, "Iniciar Sesión");
     //openUserPreferences(context);
+    super.initState();
+    loginController = LoginController(context);
+    loginController.onStateConnect =
+        (state) => setLoading(state, textButtonSesion);
   }
 
   @override
@@ -231,20 +231,23 @@ class _LoginViewState extends State<LoginView> {
       formKey.currentState?.save();
       if (!_loading) {
         setState(() => initLoading());
-        await loginController.showHomePage(
-            context, userName, password, isSwitched);
+        await loginController.showHomePage(userName, password, isSwitched);
       }
     }
   }
 
   void finalLoading() {
-    _loading = false;
-    textButtonSesion = "Iniciar Sesión";
+    setState(() {
+      _loading = false;
+      textButtonSesion = "Iniciar Sesión";
+    });
   }
 
   void setLoading(bool state, String textSesion) {
-    _loading = state;
-    textButtonSesion = textSesion;
+    setState(() {
+      _loading = state;
+      textButtonSesion = textSesion;
+    });
   }
 
   void initLoading() {
@@ -252,8 +255,9 @@ class _LoginViewState extends State<LoginView> {
     textButtonSesion = "Iniciando";
   }
 
-  Future<void> openUserPreferences(context) async {
-    WidgetsFlutterBinding.ensureInitialized();
-    loginController.openPreferences(context);
-  }
+/*   Future<void> openUserPreferences(context) async {
+    SchedulerBinding.instance.scheduleFrameCallback((timeStamp) {
+      loginController.openPreferences(context);
+    });
+  } */
 }

@@ -32,7 +32,7 @@ class Person {
         middleName: json["middleName"],
         lastNames: json["lastNames"],
         dni: json["dni"],
-        avatar: json["urlImage"],
+        avatar: json["avatar"],
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
       );
@@ -43,7 +43,7 @@ class Person {
         "middleName": middleName,
         "lastNames": lastNames,
         "dni": dni,
-        "urlImage": avatar,
+        "avatar": avatar,
         /* "createdAt": (createdAt != null) ? createdAt!.toIso8601String() : null,
         "updatedAt": (updatedAt != null) ? updatedAt!.toIso8601String() : null, */
       };

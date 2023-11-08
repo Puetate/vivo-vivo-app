@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.Dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:vivo_vivo_app/src/components/text_input.dart' as TX;
-import 'package:vivo_vivo_app/src/data/datasource/api_repository_user_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
+import 'package:vivo_vivo_app/src/domain/models/person_disability.dart';
 import 'package:vivo_vivo_app/src/domain/models/person_info.dart';
-import 'package:vivo_vivo_app/src/domain/models/user.dart';
+import 'package:vivo_vivo_app/src/screens/Register/components/dropdown_button.dart';
 import 'package:vivo_vivo_app/src/screens/Register/components/user_photo.dart';
+import 'package:vivo_vivo_app/src/screens/Register/services/get_disability.dart';
+import 'package:vivo_vivo_app/src/screens/Register/services/get_ethnic.dart';
+import 'package:vivo_vivo_app/src/screens/Register/services/get_gender.dart';
+import 'package:vivo_vivo_app/src/screens/Register/services/get_marital_status.dart';
+import 'package:vivo_vivo_app/src/screens/Register/step_two_register_view.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/app_validations.dart';
@@ -31,6 +35,8 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
   TextEditingController maritalStatus = TextEditingController();
   TextEditingController gender = TextEditingController();
   TextEditingController ethnic = TextEditingController();
+  TextEditingController disabilityPercentage = TextEditingController();
+  TextEditingController disability = TextEditingController();
   DateTime? pickerDate;
   bool isDisability = false;
   XFile? imageFile;
@@ -139,7 +145,8 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                         inputController: firstName,
                                         keyboardType: TextInputType.name,
                                         lenLimitTextInpFmt: 15,
-                                        prefixIcon: Icons.person_outline_rounded,
+                                        prefixIcon:
+                                            Icons.person_outline_rounded,
                                         textCapitalization:
                                             TextCapitalization.sentences,
                                         textInputAction: TextInputAction.next,
@@ -182,7 +189,7 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                   hinText: "Ej. 1002677784",
                                   label: "Cédula",
                                   textIsEmpty: "Ingrese su Cédula",
-                                  inputController: lastName,
+                                  inputController: idCard,
                                   keyboardType: TextInputType.number,
                                   lenLimitTextInpFmt: 30,
                                   prefixIcon: Icons.calendar_view_week_outlined,
@@ -198,9 +205,9 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                   textIsEmpty: "Ingrese su Fecha",
                                   inputController: birthDate,
                                   keyboardType: TextInputType.datetime,
-                                  lenLimitTextInpFmt: 15,
                                   prefixIcon: Icons.calendar_today_outlined,
                                   textInputAction: TextInputAction.next,
+                                  readonly: true,
                                   onTap: (() async {
                                     pickerDate = (await showDatePicker(
                                         locale: const Locale("es", "ES"),
@@ -217,76 +224,31 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                       });
                                     }
                                   }),
-                                ),                                
+                                ),
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                          decoration: InputDecoration(
-                                            label: Text(
-                                              "Estado Civil",
-                                              style: Styles.textLabel,
-                                            ),
-                                          ),
-                                          items: listMaritalStatus.map((e) {
-                                            return DropdownMenuItem(
-                                              value: e,
-                                              child: Text(e),
-                                            );
-                                          }).toList(),
-                                          validator: (value) => value == null
-                                              ? "Elija su Estado Civil"
-                                              : null,
-                                          onChanged: (item) => setState(() {
-                                                maritalStatus.text = item!;
-                                              })),
-                                    ),
+                                        child: DropDownBtn(
+                                            future: getMaritalStatus(),
+                                            label: "Estado Civil",
+                                            selectedValue: maritalStatus)),
                                     const Gap(10),
                                     Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                          decoration: InputDecoration(
-                                            label: Text(
-                                              "Género",
-                                              style: Styles.textLabel,
-                                            ),
-                                          ),
-                                          items: listGender.map((e) {
-                                            return DropdownMenuItem(
-                                              value: e,
-                                              child: Text(e),
-                                            );
-                                          }).toList(),
-                                          validator: (value) => value == null
-                                              ? "Elija su Genero"
-                                              : null,
-                                          onChanged: (item) => setState(() {
-                                                gender.text = item!;
-                                              })),
-                                    ),
+                                        child: DropDownBtn(
+                                      future: getGender(),
+                                      label: "Genero",
+                                      selectedValue: gender,
+                                    )),
                                   ],
                                 ),
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                          decoration: InputDecoration(
-                                            label: Text(
-                                              "Etnia",
-                                              style: Styles.textLabel,
-                                            ),
-                                          ),
-                                          items: listEthnic.map((e) {
-                                            return DropdownMenuItem(
-                                              value: e,
-                                              child: Text(e),
-                                            );
-                                          }).toList(),
-                                          validator: (value) => value == null
-                                              ? "Elija su Etnia"
-                                              : null,
-                                          onChanged: (item) => setState(() {
-                                                ethnic.text = item!;
-                                              })),
+                                      child: DropDownBtn(
+                                        future: getEthnic(),
+                                        label: "Etnia",
+                                        selectedValue: ethnic,
+                                      ),
                                     ),
                                     const Gap(10),
                                     Expanded(
@@ -311,6 +273,32 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                     )),
                                   ],
                                 ),
+                                if (isDisability)
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: DropDownBtn(
+                                        future: getDisability(),
+                                        label: "Discapacidad",
+                                        selectedValue: disability,
+                                      )),
+                                      const Gap(10),
+                                      Expanded(
+                                        child: TX.TextInput(
+                                          hinText: "Ej. 10",
+                                          label: "porcentaje de Discapacidad",
+                                          textIsEmpty:
+                                              "Ingrese su Discapacidad",
+                                          inputController: disabilityPercentage,
+                                          keyboardType: TextInputType.number,
+                                          lenLimitTextInpFmt: 3,
+                                          textInputAction: TextInputAction.done,
+                                          validation:
+                                              Validations.exprOnlyDigits,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                               ]),
                         ),
                         const SizedBox(height: 20),
@@ -352,79 +340,35 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
     );
   }
 
-  /// records all user data to move to a second screen that records the remaining data
-  /// Returns:
-  ///   The person object is being returned.
   Future<void> _showSecondPageRegister(BuildContext context) async {
-    String firstName = "John";
-    String middleName = "Doe";
-    String lastName = "Smith";
-    String idCard = "0401111018";
-    String bithDateCast = "1990-05-15";
-    String maritalStatus = "6544319c1ec2bff196722f2f";
-    String gender = "6543f6ec9c60565fc80d269d";
-    String ethnic = "6543f5eda6822500c8cae61e";
+    if (checkImage()) return;
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      String birthDateCast = DateFormat('yyyy-MM-dd').format(pickerDate!);
+      Person person = Person(
+        firstName: firstName.text,
+        middleName: middleName.text,
+        lastNames: lastName.text,
+        dni: idCard.text,
+        avatar: imageFile,
+        personInfo: PersonInfo(
+          birthDate: DateTime.parse(birthDateCast),
+          maritalStatus: maritalStatus.text,
+          gender: gender.text,
+          ethnic: ethnic.text,
+          address: "",
+          phone: "",
+        ),
+        personDisability: (disability.text.isNotEmpty)
+            ? PersonDisability(
+                disability: disability.text,
+                percentage: int.parse(disabilityPercentage.text))
+            : null,
+      );
 
-    User user = User(
-        username: "tuñaña", email: "pepgay1@gmail.com", password: "password");
-
-    // Crear un objeto Person con información de prueba
-    Person person = Person(
-      firstName: firstName,
-      middleName: middleName,
-      lastNames: lastName,
-      dni: idCard,
-      avatar: imageFile!.path,
-      personInfo: PersonInfo(
-        birthDate: DateTime.parse(bithDateCast),
-        maritalStatus: maritalStatus,
-        gender: gender,
-        ethnic: ethnic,
-        address: "123 Main St",
-        phone: "0961803004",
-      ),
-      /* personDisability: PersonDisability(
-        disability: "None",
-        percentage: 0,
-      ), */
-    );
-    ApiRepositoryUserImpl serviceUser = ApiRepositoryUserImpl();
-    await serviceUser.saveUser(
-        user, person, person.personInfo!, person.personDisability);
-    /* 
-    try {
-      if (checkImage()) return;
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
-        String bithDateCast = DateFormat('yyyy-MM-dd').format(pickerDate);
-        Person person = Person(
-          firstName: firstName.text,
-          middleName: middleName.text,
-          lastNames: lastName.text,
-          dni: idCard.text,
-          avatar: imageFile,
-          personInfo: PersonInfo(
-            birthDate: DateTime.parse(bithDateCast),
-            maritalStatus: maritalStatus.text.toLowerCase(),
-            gender: gender.text.toLowerCase(),
-            ethnic: ethnic.text.toLowerCase(),
-            address: "",
-            phone: "",
-          ),
-          personDisability: PersonDisability(
-            disability: "",
-            percentage: 0,
-          ),
-        );
-
-        Navigator.of(context)
-            .pushNamed("/secondRegisterPage", arguments: person);
-      }
-    } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-    } */
+      Navigator.of(context)
+          .pushNamed(StepTwoRegisterView.id, arguments: person);
+    }
   }
 
   bool checkImage() {

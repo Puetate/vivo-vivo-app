@@ -4,26 +4,27 @@
 
 import 'dart:convert';
 
-MaritalStatus maritalStatusFromJson(String str) => MaritalStatus.fromJson(json.decode(str));
+DropDownItem maritalStatusFromJson(String str) =>
+    DropDownItem.fromJson(json.decode(str));
 
-String maritalStatusToJson(MaritalStatus data) => json.encode(data.toJson());
+String maritalStatusToJson(DropDownItem data) => json.encode(data.toJson());
 
-class MaritalStatus {
-    String id;
-    int name;
+class DropDownItem {
+  String id;
+  String name;
 
-    MaritalStatus({
-        required this.id,
-        required this.name,
-    });
+  DropDownItem({
+    required this.id,
+    required this.name,
+  });
 
-    factory MaritalStatus.fromJson(Map<String, dynamic> json) => MaritalStatus(
+  factory DropDownItem.fromJson(Map<String, dynamic> json) => DropDownItem(
         id: json["_id"],
         name: json["name"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "_id": id,
         "name": name,
-    };
+      };
 }

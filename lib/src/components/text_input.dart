@@ -17,21 +17,24 @@ class TextInput extends StatefulWidget {
   final TextInputType? keyboardType;
   final TextCapitalization? textCapitalization;
   final void Function()? onTap;
+  final bool? readonly;
 
-  const TextInput(
-      {super.key,
-      // required this.onSearchChange,
-      required this.hinText,
-      required this.label,
-      required this.textIsEmpty,
-      required this.inputController,
-      this.lenLimitTextInpFmt,
-      this.validation,
-      this.textInputAction,
-      this.keyboardType,
-      this.textCapitalization = TextCapitalization.none,
-      this.prefixIcon,
-      this.onTap});
+  const TextInput({
+    super.key,
+    // required this.onSearchChange,
+    required this.hinText,
+    required this.label,
+    required this.textIsEmpty,
+    required this.inputController,
+    this.lenLimitTextInpFmt,
+    this.validation,
+    this.textInputAction,
+    this.keyboardType,
+    this.textCapitalization = TextCapitalization.none,
+    this.prefixIcon,
+    this.onTap,
+    this.readonly,
+  });
 
   @override
   State<TextInput> createState() => _TextInputState();
@@ -41,7 +44,6 @@ class _TextInputState extends State<TextInput> {
   @override
   Widget build(BuildContext context) {
     // final Size size = AppLayout.getSize(context);
-
     return TextFormField(
       inputFormatters: [
         LengthLimitingTextInputFormatter(widget.lenLimitTextInpFmt),
@@ -53,6 +55,8 @@ class _TextInputState extends State<TextInput> {
       textInputAction: widget.textInputAction,
       keyboardType: widget.keyboardType,
       textCapitalization: widget.textCapitalization!,
+      readOnly: (widget.readonly) ?? false,
+      onTap: widget.onTap,
       decoration: InputDecoration(
         hintText: widget.hinText,
         prefixIcon:

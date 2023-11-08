@@ -4,9 +4,11 @@ import 'package:flutter/services.Dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vivo_vivo_app/src/commons/validators.dart';
-import 'package:vivo_vivo_app/src/data/datasource/api_repository_user_impl.dart';
+import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
 import 'package:vivo_vivo_app/src/domain/models/user.dart';
+import 'package:vivo_vivo_app/src/screens/Login/login_view.dart';
+import 'package:vivo_vivo_app/src/screens/Register/components/map_direcctions.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/app_validations.dart';
@@ -341,142 +343,130 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
   }
 
   void _showHomePage(context) async {
-    try {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
-        setState(() {
-          textButtonSesion = "Registrando";
-          _loading = true;
-        });
-        // personArguments.phone = Formats.formatPhoneNumber(phone.text);
-        personArguments!.personInfo!.address = address.text;
-        // Person person = await servicePerson.postPerson(personArguments);
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      setState(() {
+        textButtonSesion = "Registrando";
+        _loading = true;
+      });
+      personArguments!.personInfo!.phone = phone.text;
+      personArguments!.personInfo!.address = address.text;
 
-        User user = User(
-          password: passwordConfirm.text,
-          username: userNameController.text,
-          email: email.text,
-        );
-        Map mapResponsSaveUser = await serviceUser.saveUser(
-            user,
-            personArguments!,
-            personArguments!.personInfo!,
-            personArguments!.personDisability);
-        // ignore: unnecessary_null_comparison
-        if (mapResponsSaveUser == null) {
-          setState(() {
-            textButtonSesion = "Registrarse";
-            _loading = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            elevation: 15,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-            backgroundColor: Colors.red[400],
-            content: const Row(
-              children: [
-                Icon(
-                  Icons.clear_outlined,
-                  color: Colors.white,
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Text(' Error al ingresar el Usuario'),
-              ],
-            ),
-          ));
-          return;
-        }
-        // final size = AppLayout.getSize(context);
-        showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => AlertDialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0)),
-                  title: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                    ),
-                    decoration: BoxDecoration(
-                        color: Styles.primaryColor,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "¡Perfecto!",
-                          style: Styles.textStyleBody,
-                        ),
-                        /*  , */
-                        Text(
-                          "${mapResponsSaveUser["message"]}",
-                          style: Styles.textStyleBody,
-                        ),
-                      ],
-                    ),
+      User user = User(
+        password: passwordConfirm.text,
+        username: userNameController.text,
+        email: email.text,
+      );
+      var res = await serviceUser.saveUser(
+        user,
+        personArguments!,
+        personArguments!.personInfo!,
+        personArguments!.personDisability,
+      );
+      // ignore: unnecessary_null_comparison
+      if (res == null || res.error) {
+        setState(() {
+          textButtonSesion = "Registrarse";
+          _loading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          elevation: 15,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+          backgroundColor: Colors.red[400],
+          content: const Row(
+            children: [
+              Icon(
+                Icons.clear_outlined,
+                color: Colors.white,
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(' Error al ingresar el Usuario'),
+            ],
+          ),
+        ));
+        return;
+      }
+      // final size = AppLayout.getSize(context);
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0)),
+                title: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20,
                   ),
-                  titlePadding: const EdgeInsets.all(0),
-                  content: Column(
+                  decoration: BoxDecoration(
+                      color: Styles.primaryColor,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20))),
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                          "Recuerda tu nombre de usuario para poder ingresar"),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  "Usuario: ",
-                                  style: Styles.textStyleBottomTitle
-                                      .copyWith(fontSize: 17),
-                                ),
-                                Gap(5),
-                                Text("${mapResponsSaveUser["userName"]}"),
-                              ],
-                            ),
-                            Gap(30),
-                            IconButton(
-                                onPressed: () => FlutterClipboard.copy(
-                                    "${mapResponsSaveUser["userName"]}"),
-                                icon: Icon(
-                                  Icons.content_paste_rounded,
-                                  color: Styles.primaryColor,
-                                  size: 33,
-                                ),
-                                iconSize: 30),
-                          ],
-                        ),
+                      Text(
+                        "¡Perfecto!",
+                        style: Styles.textStyleBody,
+                      ),
+                      /*  , */
+                      Text(
+                        "${res.data["message"]}",
+                        style: Styles.textStyleBody,
                       ),
                     ],
                   ),
-                  actions: [
-                    TextButton(
-                        onPressed: (() =>
-                            /* Navigator.of(context).pushReplacementNamed("/")), */
-                            Navigator.of(context).pop()),
-                        child: Text(
-                          "OK",
-                          style: Styles.textLabel.copyWith(color: Colors.blue),
-                        ))
+                ),
+                titlePadding: const EdgeInsets.all(0),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                        "Recuerda tu nombre de usuario para poder ingresar"),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                "Usuario: ",
+                                style: Styles.textStyleBottomTitle
+                                    .copyWith(fontSize: 17),
+                              ),
+                              Gap(5),
+                              Text(user.username),
+                            ],
+                          ),
+                          Gap(30),
+                          IconButton(
+                              onPressed: () =>
+                                  FlutterClipboard.copy(user.username),
+                              icon: Icon(
+                                Icons.content_paste_rounded,
+                                color: Styles.primaryColor,
+                                size: 33,
+                              ),
+                              iconSize: 30),
+                        ],
+                      ),
+                    ),
                   ],
-                ));
-      }
-    } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-
-      setState(() {
-        _loading = false;
-        textButtonSesion = "Registrarse";
-      });
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: (() => Navigator.of(context)
+                          .pushReplacementNamed(LoginView.id)),
+                      child: Text(
+                        "OK",
+                        style: Styles.textLabel.copyWith(color: Colors.blue),
+                      ))
+                ],
+              ));
     }
   }
 
@@ -485,12 +475,12 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
   }
 
   Future<void> _navigateAndReturnDirecction() async {
-    // final result = await Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const SearchPlaces()),
-    // );
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SearchPlaces()),
+    );
 
-    // if (!mounted) return;
-    // address.text = result;
+    if (!mounted) return;
+    address.text = result;
   }
 }

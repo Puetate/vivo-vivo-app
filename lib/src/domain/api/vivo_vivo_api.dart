@@ -15,15 +15,15 @@ class ResponseResult<T> {
 class Api {
   static final Dio _dio = DioSingleton.getInstance();
 
-  static Future httpGet<T>(String path) async {
+  static Future<ResponseResult> httpGet<T>(String path) async {
     return await _dio
         .get(
           path,
         )
-        .then((value) => (ResponseResult(data: value.data, error: null)))
-        .onError(
-            (error, stackTrace) => (ResponseResult(data: null, error: error)));
-  }
+        .then((value) => (ResponseResult(data: value.data, error: false)))
+        .catchError((err) => (ResponseResult(data: '', error: true)))
+        .onError((error, stackTrace) =>
+            (ResponseResult(data: null, error: error ?? ''))); }
 
   static Future get(String path, Map<String, dynamic> data) async {
     final formData = FormData.fromMap(data);
@@ -38,22 +38,24 @@ class Api {
             (error, stackTrace) => (ResponseResult(data: null, error: error)));
   }
 
-  static Future post(String path, Map<String, dynamic> data) async {
+  static Future<ResponseResult> post(
+      String path, Map<String, dynamic> data) async {
     return await _dio
         .post(path, data: data)
-        .then((value) => (ResponseResult(data: value.data, error: null)))
-        .onError(
-            (error, stackTrace) => (ResponseResult(data: null, error: error)));
+        .then((value) => (ResponseResult(data: value.data, error: false)))
+        .catchError((err) => (ResponseResult(data: '', error: true)))
+        .onError((error, stackTrace) =>
+            (ResponseResult(data: null, error: error ?? '')));
   }
 
   static Future postWithFile(String path, Map<String, dynamic> data) async {
     final formData = FormData.fromMap(data, ListFormat.pipes);
-
     return await _dio
         .post(path, data: formData)
-        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .then((value) => (ResponseResult(data: value.data, error: false)))
+        .catchError((err) => (ResponseResult(data: '', error: true)))
         .onError(
-            (error, stackTrace) => (ResponseResult(data: null, error: error)));
+            (error, stackTrace) => (ResponseResult(data: null, error: true)));
   }
 
   static Future put(String path, Map<String, dynamic> data) async {
@@ -83,4 +85,6 @@ class Api {
     ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
         .showSnackBar(MySnackBars.failureSnackBar(message, "Error!"));
   }
+
+  void g() {}
 }

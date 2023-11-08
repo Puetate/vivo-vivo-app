@@ -1,11 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:vivo_vivo_app/src/data/datasource/api_repository_user_impl.dart';
-import 'package:vivo_vivo_app/src/domain/models/person.dart';
-import 'package:vivo_vivo_app/src/domain/models/person_disability.dart';
-import 'package:vivo_vivo_app/src/domain/models/person_info.dart';
-import 'package:vivo_vivo_app/src/domain/models/user.dart';
+
 import 'package:vivo_vivo_app/src/screens/Register/step_one_register_view.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 

@@ -47,5 +47,22 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>
+	<key> NSCameraUsageDescription </key>
+	<string> Necesitamos acceso a tu cámara para tomar fotos.</string>
+	<key>UIBackgroundModes</key>
+	<string>location</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+    	<string>dev.flutter.background.refresh</string>
+	</array>
 </dict>
 </plist>
