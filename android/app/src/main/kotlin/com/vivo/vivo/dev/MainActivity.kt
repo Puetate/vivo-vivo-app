@@ -1,4 +1,4 @@
-package com.example.vivo_vivo_app
+package com.vivo.vivo.dev
 
 import io.flutter.embedding.android.FlutterActivity
 
