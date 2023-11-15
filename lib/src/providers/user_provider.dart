@@ -6,7 +6,7 @@ class UserProvider with ChangeNotifier {
 
   UserPrefProvider? get getUserPrefProvider => userData;
 
-  Future<bool> getUser(UserAuth user, String token) async {
+  bool getUser(UserAuth user, String token) {
     if (userData != null) return true;
     userData = UserPrefProvider(user: user, token: token);
     // notifyListeners();

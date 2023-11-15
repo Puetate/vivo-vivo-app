@@ -9,10 +9,10 @@ String userPrefProviderToJson(UserPrefProvider data) =>
     json.encode(data.toJson());
 
 String userAuthToJson(UserAuth data) => json.encode(data.toJson());
-UserAuth userAuthFromJson(String str) =>
-    UserAuth.fromJson(json.decode(str));
+UserAuth userAuthFromJson(String str) => UserAuth.fromJson(json.decode(str));
+UserAuth userAuthFromJsonPreferences(String str) => UserAuth.fromJsonPreferences(json.decode(str));
 
-    String HOST = dotenv.env['HOST']!;
+String HOST = dotenv.env['HOST']!;
 
 class UserPrefProvider {
   UserAuth user;
@@ -44,7 +44,7 @@ class UserPrefProvider {
 class UserAuth {
   String idUser;
   String idPerson;
-  String username;
+  String names;
   String email;
   String phone;
   String avatar;
@@ -54,7 +54,7 @@ class UserAuth {
   UserAuth({
     required this.idUser,
     required this.idPerson,
-    required this.username,
+    required this.names,
     required this.email,
     required this.phone,
     required this.avatar,
@@ -64,17 +64,27 @@ class UserAuth {
   factory UserAuth.fromJson(Map<String, dynamic> json) => UserAuth(
         idUser: json["idUser"],
         idPerson: json["idPerson"],
-        username: json["username"],
+        names: json["names"],
         email: json["email"],
         phone: json["phone"],
-        avatar:"$HOST${json["avatar"]}",
+        avatar: "$HOST/${json["avatar"]}",
+        roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
+      );
+
+      factory UserAuth.fromJsonPreferences(Map<String, dynamic> json) => UserAuth(
+        idUser: json["idUser"],
+        idPerson: json["idPerson"],
+        names: json["names"],
+        email: json["email"],
+        phone: json["phone"],
+        avatar: json["avatar"],
         roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "idUser": idUser,
         "idPerson": idPerson,
-        "username": username,
+        "names": names,
         "email": email,
         "phone": phone,
         "avatar": avatar,

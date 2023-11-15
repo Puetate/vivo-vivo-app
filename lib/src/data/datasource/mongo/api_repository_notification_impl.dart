@@ -14,18 +14,13 @@ class ApiRepositoryNotificationImpl extends ApiRepositoryNotificationInterface {
   }
 
   @override
-  Future postAlarm(AlarmRequest alarm) async {
-    var resp = await Api.post("alarm", alarm.toJson());
-    return resp;
-  }
-
-  @override
-  Future<bool> putAlarm(Map alarm) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> sendNotificationFamilyGroup(String userId, String name) {
-    throw UnimplementedError();
+  Future sendNotificationFamilyGroup(String userId, String name) async {
+    Map<String, dynamic> data = {
+      "user": userId,
+      "names": name,
+    };
+    var res =
+       await Api.post("push-notification/send-notification-family-group", data);
+    return res;
   }
 }

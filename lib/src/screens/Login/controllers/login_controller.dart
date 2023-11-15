@@ -16,19 +16,19 @@ class LoginController {
   late UserProvider userProvider;
   late BuildContext context;
 
-  LoginController(BuildContext context) {
+  LoginController(BuildContext newContext) {
+    context = newContext;
     userService = ApiRepositoryUserImpl();
     userProvider = context.read<UserProvider>();
-    context = context;
   }
 
   Future<void> showHomePage( String userName,
-      String password, bool saveCredentials) async {
+      String password) async {
     var res = await userService.getUser(createCredentials(userName, password));
     if (res == null || res.error) return onStateConnect(false);
     final UserPrefProvider user = UserPrefProvider.fromJson(res.data);
-    await userProvider.getUser(user.getUser, user.getToken);
-    if (saveCredentials) this.saveCredentials(user.getUser, user.getToken);
+    userProvider.getUser(user.getUser, user.getToken);
+    saveCredentials(user.getUser, user.getToken);
     Navigator.of(context).pushReplacementNamed(HomeView.id);
   }
   

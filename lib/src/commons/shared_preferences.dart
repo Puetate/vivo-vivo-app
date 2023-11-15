@@ -48,6 +48,11 @@ class SharedPrefs {
     _sharedPrefs?.remove(KEY_USER);
     _sharedPrefs?.remove(KEY_TOKEN);
   }
+
+  void removeAlarmInfo() {
+    _sharedPrefs?.remove(KEY_ID_ALARM);
+    _sharedPrefs?.remove(KEY_FAMILY_GROUP_IDS);
+  }
 }
 
 final sharedPrefs = SharedPrefs();

@@ -5,21 +5,15 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
 
 class SocketProvider with ChangeNotifier {
-  static late IO.Socket? _socket;
-
-  // Declarar una instancia privada como parte del patrón Singleton.
-
-  factory SocketProvider() => SocketProvider._internal();
-
-  SocketProvider._internal();
+  IO.Socket? _socket;
   
   void connect(UserAuth user) async {
     try {
-      if (_socket!.connected) {
+      if ( _socket != null ) {
         return;
       }
-      _socket ??= IO.io(
-          dotenv.env['BASE_URL'],
+      _socket = IO.io(
+          dotenv.env['HOST'],
           /* <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': true,
@@ -27,10 +21,10 @@ class SocketProvider with ChangeNotifier {
       } */
           IO.OptionBuilder()
               .setTransports(['websocket'])
-              .enableAutoConnect()
+              // .enableAutoConnect()
               .enableReconnection()
-              .setQuery({'personId': user.idPerson})
-              .setExtraHeaders({'personId': user.idPerson}) // optional
+              .setQuery({'userId': user.idUser})
+              .setExtraHeaders({'userId': user.idUser}) // optional
               .build());
 
       _socket!.connect();
@@ -53,11 +47,9 @@ class SocketProvider with ChangeNotifier {
 
   void onLocation(String event, dynamic Function(dynamic) callback) {
     _socket!.on(event, callback);
-    notifyListeners();
   }
 
   void onAlerts(String event, dynamic Function(dynamic) callback) {
     _socket!.on(event, callback);
-    notifyListeners();
   }
 }

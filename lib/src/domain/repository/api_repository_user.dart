@@ -6,9 +6,9 @@ import 'package:vivo_vivo_app/src/domain/models/user.dart';
 
 abstract class ApiRepositoryUserInterface {
   Future getUser(Map<String, dynamic> credentials);
-  Future<Map<String, dynamic>> postIdOneSignal(
-      String id, String idOneSignal);
-  Future saveUser(User user, Person person, PersonInfo personInfo, PersonDisability personDisability);
+  Future postIdOneSignal(String id, String idOneSignal);
+  Future saveUser(User user, Person person, PersonInfo personInfo,
+      PersonDisability personDisability);
   Future<Map<String, dynamic>> postChangePassword(Map changePasswordData);
   Future<Map<String, dynamic>> postSendEmailChangePassword(
       Map changePasswordData);

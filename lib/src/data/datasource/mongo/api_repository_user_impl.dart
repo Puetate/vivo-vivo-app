@@ -26,8 +26,12 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
   }
 
   @override
-  Future<Map<String, dynamic>> postIdOneSignal(String id, String idOneSignal) {
-    throw UnimplementedError();
+  Future postIdOneSignal(String id, String idOneSignal) async {
+    Map<String, dynamic> data = {
+      "idOneSignal": idOneSignal,
+    };
+    var res = await Api.patch("user/$id", data);
+    return res;
   }
 
   @override

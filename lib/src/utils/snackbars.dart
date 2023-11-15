@@ -36,13 +36,13 @@ class MySnackBars {
     ),
   );
 
-  static var successSnackBar = SnackBar(
+  static successSnackBar(String message, String title) => SnackBar(
     elevation: 0,
     behavior: SnackBarBehavior.floating,
     backgroundColor: Colors.transparent,
     content: AwesomeSnackbarContent(
-      title: 'Enviado!',
-      message: '',
+      title: title,
+      message: message,
       contentType: ContentType.success,
     ),
   );

@@ -21,7 +21,7 @@ class FormComponent {
           return StatefulBuilder(
             builder: (context, setState) {
               String buttonTextAceptar = "Aceptar";
-              var _loading = false;
+              // var _loading = false;
               return AlertDialog(
                 insetPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
@@ -143,7 +143,7 @@ class FormComponent {
                           onPressed: () async {
                             setState(() {
                               textButton = "Cambiando";
-                              _loading = true;
+                              // _loading = true;
                             });
                             /* bool isChangePassword =
                                 await _changePassword(context);

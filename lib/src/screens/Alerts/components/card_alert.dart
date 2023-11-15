@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:vivo_vivo_app/src/components/photo.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
+import 'package:vivo_vivo_app/src/screens/MapLocation/map_location.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 
@@ -14,9 +15,11 @@ class CardAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size size = AppLayout.getSize(context);
-    String state = (userAlert.state == "danger") ? "En peligro" : "Seguro";
-    Color colorState =
-        (userAlert.state == "danger") ? Styles.redText : Styles.green;
+    String state =
+        (userAlert.status.toUpperCase() == "DANGER") ? "En peligro" : "Seguro";
+    Color colorState = (userAlert.status.toUpperCase() == "DANGER")
+        ? Styles.redText
+        : Styles.green;
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -39,17 +42,14 @@ class CardAlert extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                      children: [
-                        UIComponents.photo(size, userAlert.user)
-                      ],
+                      children: [UIComponents.photo(size, userAlert.avatar)],
                     ),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                              "${userAlert.user.username} ${userAlert.user.username}"),
+                          Text(userAlert.names),
                           Text(
                             "Estado: $state",
                             style: Styles.textState.copyWith(color: colorState),
@@ -59,7 +59,7 @@ class CardAlert extends StatelessWidget {
                     ),
                     Column(
                       children: [
-                        (userAlert.state == "danger")
+                        (userAlert.status == "DANGER")
                             ? RippleAnimation(
                                 repeat: true,
                                 color: colorState,
@@ -91,15 +91,15 @@ class CardAlert extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (userAlert.state == "danger")
+                    if (userAlert.status == "DANGER")
                       TextButton(
                         onPressed: () {
-                          /* Navigator.push(
+                          Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => LocationMap(
-                                        person: userAlert.user.person,
-                                      ))); */
+                                        user: userAlert,
+                                      )));
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

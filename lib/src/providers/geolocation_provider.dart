@@ -6,7 +6,9 @@ import 'package:location/location.dart';
 class GeoLocationProvider with ChangeNotifier {
   LocationData? currentPosition;
   Location location = Location();
-  LocationData locationData = LocationData.fromMap({});
+  
+  bool isSendLocation = false;
+  LocationData locationData = LocationData.fromMap({"latitude": 0.0, "longitude": 0.0});
   StreamSubscription<LocationData>? locationSubscription;
 
   LocationData get getLocationData => locationData;
@@ -17,6 +19,7 @@ class GeoLocationProvider with ChangeNotifier {
 
   StreamSubscription<LocationData>? get getLocationSubscription =>
       locationSubscription;
+
 
   Future<bool> getCurrentLocation() async {
     try {
@@ -38,8 +41,14 @@ class GeoLocationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  set setIsSendLocation(bool value) {
+    isSendLocation = value;
+    notifyListeners();
+  }
+
   Future<void> stopListen() async {
     await locationSubscription?.cancel();
+    isSendLocation = false;
     locationSubscription = null;
     notifyListeners();
   }

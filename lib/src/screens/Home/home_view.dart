@@ -15,7 +15,6 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_notificat
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
-import 'package:vivo_vivo_app/src/providers/socket_provider.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Alerts/alerts.dart';
 import 'package:vivo_vivo_app/src/screens/Home/components/drawer.dart';
@@ -35,8 +34,6 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   late StreamSubscription<LC.LocationData> locationSubscription;
   late final HomeController homeController;
-  late SocketProvider socketProvider;
-  late AlarmStateProvider alarmProvider;
   late String idAlarm;
   late UserAuth user;
 
@@ -48,11 +45,10 @@ class _HomeViewState extends State<HomeView> {
   TextEditingController password = TextEditingController();
   String passwordConfirm = "";
   String textButton = "Envío de alerta de Incidente";
-  bool isProcessFinalizeLocation = false;
   LC.Location location = LC.Location();
   bool isProcessSendLocation = false;
   List<String> familyGroupIds = [];
-  List<UserAlert> userAlerts = [];
+  List<UserAlert>? userAlerts = [];
   bool isSendLocation = false;
   int countSocket = 0;
   int count = 0;
@@ -60,16 +56,19 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    alarmProvider = context.read<AlarmStateProvider>();
-    homeController = HomeController(newContext: context);
+    homeController = HomeController(context);
     homeController.openPreferences(context);
     user = context.read<UserProvider>().getUserPrefProvider!.getUser;
-    socketProvider = context.read<SocketProvider>();
+    homeController.initSocket(user);
     homeController.onStateGetAlerts =
         (userAlerts, count) => setUserAlerts(userAlerts, count);
-    homeController.getUsersAlerts;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.openStateUser(user);
+    });
+    homeController.getUsersAlerts();
     initPlatform(context);
     // onAlerts();
+    // homeController.openPermissionLocations();
   }
 
   @override
@@ -80,7 +79,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final Size size = AppLayout.getSize(context);
-    // homeController.openStateUser();
+    AlarmStateProvider alarmProvider = context.watch<AlarmStateProvider>();
     // homeController.openPermissionLocations();
 
     return Scaffold(
@@ -119,7 +118,7 @@ class _HomeViewState extends State<HomeView> {
                                 borderRadius: BorderRadius.vertical(
                                     top: Radius.circular(20))),
                             builder: (context) => Alerts(
-                              personId: user.idPerson,
+                              userId: user.idUser,
                             ),
                           );
                         },
@@ -152,9 +151,9 @@ class _HomeViewState extends State<HomeView> {
                                   ),
                                   (LongPressGestureRecognizer instance) {
                                     instance.onLongPress = () {
-                                      Vibration.vibrate(duration: 50);                                      
-                                      alarmProvider.setIsProcessSendLocation(
-                                          true);
+                                      Vibration.vibrate(duration: 50);
+                                      alarmProvider
+                                          .setIsProcessSendLocation(true);
                                       sendLocation(true);
                                     };
                                   },
@@ -231,11 +230,10 @@ class _HomeViewState extends State<HomeView> {
                                                     instance.onLongPress = () {
                                                       Vibration.vibrate(
                                                           duration: 50);
-                                                      setState(() {
-                                                        isProcessFinalizeLocation =
-                                                            true;
-                                                      });
-                                                      /* (cancelSendLocation()); */
+                                                      alarmProvider
+                                                          .setIsProcessFinalizeLocation(
+                                                              true);
+                                                      (cancelSendLocation());
                                                     };
                                                   },
                                                 ),
@@ -276,7 +274,7 @@ class _HomeViewState extends State<HomeView> {
                       const Text(
                         "Presione durante 3 segundos para terminar alerta",
                         style: TextStyle(color: Colors.white),
-                      )
+                      ),
                     ]
                   ],
                 ),
@@ -286,7 +284,8 @@ class _HomeViewState extends State<HomeView> {
         ),
         endDrawer: EndDrawer(user: user));
   }
-  void setUserAlerts(List<UserAlert> newUserAlerts, int newCount) {
+
+  void setUserAlerts(List<UserAlert>? newUserAlerts, int newCount) {
     setState(() {
       userAlerts = newUserAlerts;
       count = newCount;
@@ -294,6 +293,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> initPlatform(BuildContext context) async {
+    if (!mounted) return;
     homeController.initPlatform();
   }
 
@@ -307,152 +307,10 @@ class _HomeViewState extends State<HomeView> {
     if (mounted) {
       hasPermission = await Permissions.checkPermission(context);
     }
-    homeController.sendLocation(isNewAlarm, hasPermission, user);
-  }
-
-/* 
-  Future<Position> _getLastKnownPosition() async {
-    final position = await Geolocator.getLastKnownPosition();
-    if (position != null) {
-      log('${position.latitude}  ${position.longitude}');
-      return position;
-    } else {
-      return null;
-    }
+    homeController.initSendAlarm(isNewAlarm, hasPermission, user);
   }
 
   void cancelSendLocation() async {
-    try {
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-
-      UserServices serviceUser = UserServices();
-      Position lastPosition = await _getLastKnownPosition();
-      String id = preferences.getString("idAlarm");
-
-      bool isCancel = await putAlarmBD(
-          id, "cancelada", lastPosition.latitude, lastPosition.longitude, true);
-      if (isCancel) {
-        await serviceUser.putStateByUser(user.id, "ok");
-        await locationSubscription.cancel();
-        location.enableBackgroundMode(enable: false);
-        preferences.setString("state", "ok");
-        preferences.remove("idAlarm");
-        preferences.remove("familyGroupIds");
-        setState(() {
-          isProcessFinalizeLocation = false;
-          isSendLocation = false;
-          textButton = "Envío de alerta de Incidente";
-        });
-        Vibration.vibrate(duration: 100);
-      } else {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('No se pudo cancelar, Intente de nuevo'),
-        ));
-        setState(() {
-          isProcessFinalizeLocation = false;
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(MySnackBars.errorConectionSnackBar());
-      setState(() {
-        isProcessFinalizeLocation = false;
-      });
-    }
+    homeController.cancelSendLocation(user.idUser);
   }
-
-  Future<void> _getAddressFromLatLng(Position position) async {
-    await placemarkFromCoordinates(position.latitude, position.longitude)
-        .then((List<Placemark> placemarks) {
-      Placemark place = placemarks[0];
-      _currentAddress =
-          '${place.subLocality}, ${place.subAdministrativeArea}, ${place.street}';
-    }).catchError((e) {
-      print(e);
-    });
-  }
-
-  Future<String> postAlarmBD(double lat, double lng) async {
-    //CUERPO DE PETICION POST PARA GUARDAR LA NOTIFICACION EN LA BASE DE DATOS
-    try {
-      var contentAlertPostServer = Alarm(
-          person: user.person.id,
-          state: "en progreso",
-          latitude: lat,
-          longitude: lng,
-          type: "phone");
-
-      var id = await serviceNotification.postAlarm(contentAlertPostServer);
-      setState(() {
-        idAlarm = jsonDecode(id);
-      });
-      if (id != null) {
-        return id;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<bool> putAlarmBD(
-      String idAlarm, String state, double lat, double lng, bool isLast) async {
-    try {
-      Map contentAlertPostServer = {
-        "id": idAlarm,
-        "person": user.person.id,
-        "state": state,
-        "finalLatitude": lat,
-        "finalLongitude": lng,
-      };
-      return await serviceNotification.putAlarm(contentAlertPostServer);
-    } catch (e) {
-      print(e.toString());
-      return false;
-    }
-  }
-
-  
-
-  Future<void> setIdOneSignal(String idOS) async {
-    UserServices userServices = UserServices();
-
-    if (user.idOneSignal == null || (user.idOneSignal != idOS)) {
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      Map idOne = await userServices.postIdOneSignal(user.id, idOS, token);
-      user.idOneSignal = idOne["idOneSignal"];
-      var userString = jsonDecode(jsonEncode(userToJson(user)));
-      preferences.setString("user", userString);
-      return;
-    }
-  }
-
-
-  Future<bool> _changePassword(context) async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-
-      Map<String, String> changePasswordData = {
-        "userId": user.id,
-        "password": password,
-      };
-      UserServices userServices = UserServices();
-      Map response = await userServices.postChangePassword(changePasswordData);
-      if (response == null) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(MySnackBars.errorConectionSnackBar());
-
-        return false;
-      }
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(MySnackBars.simpleSnackbar(
-          "${response["message"]}", Icons.lock_reset_rounded, Styles.green));
-      _scaffoldKey.currentState.closeEndDrawer();
-      return true;
-    }
-    return false;
-  } */
 }

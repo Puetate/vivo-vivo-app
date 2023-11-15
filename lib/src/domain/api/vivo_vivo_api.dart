@@ -15,7 +15,7 @@ class ResponseResult<T> {
 class Api {
   static final Dio _dio = DioSingleton.getInstance();
 
-  static Future<ResponseResult> httpGet<T>(String path) async {
+  static Future<ResponseResult> httpGet(String path) async {
     return await _dio
         .get(
           path,
@@ -23,7 +23,8 @@ class Api {
         .then((value) => (ResponseResult(data: value.data, error: false)))
         .catchError((err) => (ResponseResult(data: '', error: true)))
         .onError((error, stackTrace) =>
-            (ResponseResult(data: null, error: error ?? ''))); }
+            (ResponseResult(data: null, error: error ?? '')));
+  }
 
   static Future get(String path, Map<String, dynamic> data) async {
     final formData = FormData.fromMap(data);
@@ -34,6 +35,7 @@ class Api {
           data: formData,
         )
         .then((value) => (ResponseResult(data: value.data, error: null)))
+        .catchError((err) => (ResponseResult(data: '', error: true)))
         .onError(
             (error, stackTrace) => (ResponseResult(data: null, error: error)));
   }
@@ -58,14 +60,13 @@ class Api {
             (error, stackTrace) => (ResponseResult(data: null, error: true)));
   }
 
-  static Future put(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
-
+  static Future patch(String path, Map<String, dynamic> data) async {
     return await _dio
-        .put(path, data: formData)
-        .then((value) => (ResponseResult(data: value.data, error: null)))
+        .patch(path, data: data)
+        .then((value) => (ResponseResult(data: value.data, error: false)))
+        .catchError((err) => (ResponseResult(data: '', error: true)))
         .onError(
-            (error, stackTrace) => (ResponseResult(data: null, error: error)));
+            (error, stackTrace) => (ResponseResult(data: null, error: true)));
   }
 
   static Future delete(String path, Map<String, dynamic> data) async {

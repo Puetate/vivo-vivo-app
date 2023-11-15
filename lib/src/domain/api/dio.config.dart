@@ -13,18 +13,17 @@ class DioSingleton {
     // Configuración de Dio y sus interceptores
     final dio = Dio(
       BaseOptions(
-        baseUrl: dotenv.env['BASE_URL']!,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json; charset=utf-8",
-        },
-        receiveTimeout: const Duration(seconds: 10)
-      ),
+          baseUrl: dotenv.env['BASE_URL']!,
+          headers: {
+            HttpHeaders.contentTypeHeader: "application/json; charset=utf-8",
+          },
+          receiveTimeout: const Duration(seconds: 60),
+          connectTimeout: const Duration(seconds: 60)),
     );
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        final token = SharedPrefs()
-            .token; // Implementa tu propia lógica para obtener el token
+        final token = SharedPrefs().token;
         options.headers['Authorization'] = 'Bearer $token';
         handler.next(options);
       },
@@ -32,7 +31,9 @@ class DioSingleton {
         handler.next(response);
       },
       onError: (DioException error, handler) {
-        final message = error.response?.data['error'] ?? '';
+        const String notConnectMessage = 'Compruebe su Conexión a Internet';
+        final String message =
+            error.response?.data['error'] ?? notConnectMessage;
 
         ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
             .showSnackBar(MySnackBars.failureSnackBar(message,

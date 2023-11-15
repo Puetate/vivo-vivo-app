@@ -95,22 +95,21 @@ class _LoginViewState extends State<LoginView> {
                           child: Column(children: [
                             TextFormField(
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(11),
+                                LengthLimitingTextInputFormatter(50),
                                 FilteringTextInputFormatter.deny(
                                     Validations.exprWithoutWhitespace),
                               ],
                               textInputAction: TextInputAction.next,
-                              textCapitalization: TextCapitalization.words,
-                              keyboardType: TextInputType.name,
+                              keyboardType: TextInputType.emailAddress,
                               controller: email,
                               decoration: const InputDecoration(
                                 prefixIcon: Icon(Icons.person),
-                                label: Text("Nombre de Usuario"),
+                                label: Text("Correo Electrónico"),
                               ),
                               onSaved: (value) => {userNameValue = value!},
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return "Ingrese su Nombre de Usuario";
+                                  return "Ingrese su Correo";
                                 }
                                 return null;
                               },
@@ -179,22 +178,7 @@ class _LoginViewState extends State<LoginView> {
                                 }),
                             const SizedBox(
                               height: 15,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(saveSesionText),
-                                const Padding(
-                                    padding: EdgeInsets.only(right: 15)),
-                                Checkbox(
-                                    value: isSwitched,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isSwitched = value!;
-                                      });
-                                    }),
-                              ],
-                            ),
+                            ),                            
                             const ButtonRememberPassword()
                           ]),
                         ),
@@ -231,7 +215,7 @@ class _LoginViewState extends State<LoginView> {
       formKey.currentState?.save();
       if (!_loading) {
         setState(() => initLoading());
-        await loginController.showHomePage(userName, password, isSwitched);
+        await loginController.showHomePage(userName, password);
       }
     }
   }

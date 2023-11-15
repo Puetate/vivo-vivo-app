@@ -12,7 +12,6 @@ import 'package:vivo_vivo_app/src/screens/Register/components/map_direcctions.da
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/app_validations.dart';
-import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
 class StepTwoRegisterView extends StatefulWidget {
   const StepTwoRegisterView({super.key});

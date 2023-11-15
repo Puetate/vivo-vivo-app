@@ -56,6 +56,7 @@ class AlarmDetail {
   DateTime date;
   double latitude;
   double longitude;
+  String? user;
 
   AlarmDetail({
     this.alarm,
@@ -63,6 +64,7 @@ class AlarmDetail {
     required this.date,
     required this.latitude,
     required this.longitude,
+    this.user
   });
 
   factory AlarmDetail.fromJson(Map<String, dynamic> json) => AlarmDetail(
@@ -79,5 +81,6 @@ class AlarmDetail {
         "date": date.toIso8601String(),
         "latitude": latitude,
         "longitude": longitude,
+        "user": user
       };
 }

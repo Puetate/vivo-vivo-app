@@ -286,7 +286,7 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                       Expanded(
                                         child: TX.TextInput(
                                           hinText: "Ej. 10",
-                                          label: "porcentaje de Discapacidad",
+                                          label: "Porcentaje de Discapacidad",
                                           textIsEmpty:
                                               "Ingrese su Discapacidad",
                                           inputController: disabilityPercentage,

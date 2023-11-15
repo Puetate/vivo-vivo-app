@@ -1,5 +1,7 @@
-import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
+import 'package:vivo_vivo_app/src/domain/models/alarm.dart';
 
 abstract class ApiRepositoryAlarmInterface {
-  Future<List<UserAlert>> getUsersAlertsByPerson(String personId);
+  Future postAlarm(AlarmRequest alarm);
+  Future<bool> putAlarm(Map alarm);
+  Future postAlarmDetail(AlarmDetail alarmDetail);
 }

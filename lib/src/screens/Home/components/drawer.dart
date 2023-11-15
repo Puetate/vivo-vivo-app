@@ -23,7 +23,7 @@ class _EndDrawerState extends State<EndDrawer> {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(widget.user.username),
+            accountName: Text(widget.user.names),
             accountEmail: Column(
               children: [
                 Padding(
@@ -140,7 +140,7 @@ class _EndDrawerState extends State<EndDrawer> {
   }
 
   void _logOut(context) async {
-    HomeController homeController = HomeController(newContext: context);
+    HomeController homeController = HomeController(context);
     homeController.logOut();
   }
 }
