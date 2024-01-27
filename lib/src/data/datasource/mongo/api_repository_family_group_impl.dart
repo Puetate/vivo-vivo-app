@@ -20,10 +20,22 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
         .toList();
     return usersAlerts;
   }
-  
+
   @override
   Future getFamilyGroupByUserInDanger(String familyMemberId) async {
     var res = await Api.httpGet("family-group/user-in-danger/$familyMemberId");
+    return res;
+  }
+
+  @override
+  Future getAllFamilyGroupByUserId(String userId) async {
+    var res = await Api.httpGet("family-group/user/$userId");
+    return res;
+  }
+
+  @override
+  Future getUserByDni(String dni) async {
+    var res = await Api.httpGet("user/dni/$dni");
     return res;
   }
 }

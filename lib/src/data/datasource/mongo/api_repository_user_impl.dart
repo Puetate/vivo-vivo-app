@@ -46,7 +46,7 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
   }
 
   @override
-  Future saveUser(User user, Person person, PersonInfo personInfo,
+  Future saveUser(FamilyGroup user, Person person, PersonInfo personInfo,
       PersonDisability? personDisability) async {
     Map<String, String> userData = {
       "username": user.username,

@@ -135,8 +135,8 @@ class HomeController {
   void openStateUser(UserAuth user) async {
     String state = SharedPrefs().state;
     if (state == DANGER) {
-      initSendAlarm(false, true, user);
       alarmState.setIsProcessSendLocation(true);
+      initSendAlarm(false, true, user);
     } else {
       var alarmProvider = context.read<AlarmStateProvider>();
       alarmProvider.setIsSendLocation(false);
@@ -187,6 +187,7 @@ class HomeController {
   void getLivePosition(UserAuth user) {
     var location = geoLocationProvider.getLocation;
     location.enableBackgroundMode(enable: true);
+    location.changeSettings(accuracy: LocationAccuracy.high, distanceFilter: 0, interval: 400);
     location.changeNotificationOptions(
         channelName: "channel",
         subtitle: "Se esta enviando tu ubicación a tu núcleo de confianza.",
@@ -200,7 +201,6 @@ class HomeController {
         jsonDecode(SharedPrefs().familyGroupIds).cast<String>();
     var locationSubscription =
         location.onLocationChanged.listen((LocationData position) {
-      log('${position.latitude}, ${position.longitude}');
       Map data = {
         "position": {"lat": position.latitude, "lng": position.longitude},
         "familyMemberUserIds": familyGroupsIds,
@@ -208,6 +208,7 @@ class HomeController {
       };
       geoLocationProvider.setLocationData = position;
       socketProvider.emitLocation("send-alarm", data);
+      log('${position.latitude}, ${position.longitude}');
     });
     geoLocationProvider.setLocationSubscription = locationSubscription;
   }
@@ -276,6 +277,7 @@ class HomeController {
     SharedPrefs().state = OK;
     SharedPrefs().removeAlarmInfo();
     alarmState.setIsProcessSendLocation(false);
+    alarmState.setIsProcessFinalizeLocation(false);
     alarmState.setIsSendLocation(false);
     alarmState.setTextButton("Envío de alerta de Incidente");
     Vibration.vibrate(duration: 100);

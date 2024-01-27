@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
-import 'package:vivo_vivo_app/src/screens/Home/components/form_change_pasword.dart';
+import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/family_group.dart';
+import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/form_change_pasword.dart';
 import 'package:vivo_vivo_app/src/screens/Home/controllers/home_controller.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 
@@ -100,10 +101,9 @@ class _EndDrawerState extends State<EndDrawer> {
                                   borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(20))),
                               builder:
-                                  (context) => /* FamilyGroup(
-                                    userId: widget.user.id,
-                                  ) */
-                                      (Text('data')),
+                                  (context) => FamilyGroup(
+                                    userId: widget.user.idUser,
+                                  ),
                             )),
                     const Divider(
                       height: 10,

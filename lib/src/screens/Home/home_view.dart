@@ -17,7 +17,7 @@ import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Alerts/alerts.dart';
-import 'package:vivo_vivo_app/src/screens/Home/components/drawer.dart';
+import 'package:vivo_vivo_app/src/screens/Home/Drawer/drawer.dart';
 import 'package:vivo_vivo_app/src/screens/Home/controllers/home_controller.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';

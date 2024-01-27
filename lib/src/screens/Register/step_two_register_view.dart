@@ -249,8 +249,8 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return "Ingrese su contraseña";
-                                    } else if (value.length < 6) {
-                                      return "La contraseña debe tener almenos 6 caracteres";
+                                    } else if (value.length < 8) {
+                                      return "La contraseña debe tener almenos 8 caracteres";
                                     }
                                     password.text = value;
                                     return null;
@@ -280,8 +280,8 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return "Ingrese su contraseña";
-                                    } else if (value.length < 6) {
-                                      return "La contraseña debe tener almenos 6 caracteres";
+                                    } else if (value.length < 8) {
+                                      return "La contraseña debe tener al menos 6 caracteres";
                                     }
                                     if (!(password.text == value)) {
                                       return "Las contraseñas no coinciden";
@@ -351,7 +351,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
       personArguments!.personInfo!.phone = phone.text;
       personArguments!.personInfo!.address = address.text;
 
-      User user = User(
+      FamilyGroup user = FamilyGroup(
         password: passwordConfirm.text,
         username: userNameController.text,
         email: email.text,

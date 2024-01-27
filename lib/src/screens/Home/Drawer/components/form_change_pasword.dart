@@ -52,7 +52,8 @@ class FormComponent {
                           key: _formKey,
                           child: Column(
                             children: <Widget>[
-                              TX.TextInput(
+                              TX.TextInput(                                 
+                                prefixIcon: Icons.lock_person,
                                 hinText: "XXXXXXX",
                                 label: "Contraseña Nueva",
                                 textIsEmpty: "Ingrese su contraseña",

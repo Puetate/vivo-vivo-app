@@ -17,7 +17,8 @@ class MapLocationController {
 
   void getLivePosition() {
     var location = geoLocationProvider.getLocation;
-    location.enableBackgroundMode(enable: false);
+    // location.enableBackgroundMode(enable: false);
+    location.changeSettings(accuracy: LocationAccuracy.high, distanceFilter: 0, interval: 400);
     location.changeNotificationOptions(
         channelName: "channel",
         subtitle: "Se esta enviando tu ubicación a tu núcleo de confianza.",

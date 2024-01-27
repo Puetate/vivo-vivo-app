@@ -6,11 +6,11 @@ import 'dart:convert';
 
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
 
-User userFromJson(String str) => User.fromJson(json.decode(str));
+FamilyGroup userFromJson(String str) => FamilyGroup.fromJson(json.decode(str));
 
-String userToJson(User data) => json.encode(data.toJson());
+String userToJson(FamilyGroup data) => json.encode(data.toJson());
 
-class User {
+class FamilyGroup {
   String? id;
   String username;
   String email;
@@ -20,7 +20,7 @@ class User {
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  User({
+  FamilyGroup({
     this.id,
     required this.username,
     required this.email,
@@ -31,7 +31,7 @@ class User {
     this.updatedAt,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory FamilyGroup.fromJson(Map<String, dynamic> json) => FamilyGroup(
         id: json["_id"],
         username: json["username"],
         email: json["email"],

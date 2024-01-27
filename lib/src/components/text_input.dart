@@ -18,6 +18,7 @@ class TextInput extends StatefulWidget {
   final TextCapitalization? textCapitalization;
   final void Function()? onTap;
   final bool? readonly;
+  final Key? inputKey;
 
   const TextInput({
     super.key,
@@ -34,6 +35,7 @@ class TextInput extends StatefulWidget {
     this.prefixIcon,
     this.onTap,
     this.readonly,
+    this.inputKey,
   });
 
   @override
@@ -51,6 +53,7 @@ class _TextInputState extends State<TextInput> {
             ? widget.validation!
             : Validations.exprOnlyLetter),
       ],
+      key: widget.inputKey,
       controller: widget.inputController,
       textInputAction: widget.textInputAction,
       keyboardType: widget.keyboardType,
