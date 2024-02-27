@@ -9,34 +9,39 @@ class TextInput extends StatefulWidget {
   final String label;
   final String hinText;
   final String textIsEmpty;
+  final bool? obscureText;
 
   final IconData? prefixIcon;
+  final IconData? suffixIcon;
   final int? lenLimitTextInpFmt;
   final RegExp? validation;
   final TextInputAction? textInputAction;
   final TextInputType? keyboardType;
   final TextCapitalization? textCapitalization;
   final void Function()? onTap;
+  final void Function(String value)? onTapSuffixIcon;
   final bool? readonly;
   final Key? inputKey;
 
-  const TextInput({
-    super.key,
-    // required this.onSearchChange,
-    required this.hinText,
-    required this.label,
-    required this.textIsEmpty,
-    required this.inputController,
-    this.lenLimitTextInpFmt,
-    this.validation,
-    this.textInputAction,
-    this.keyboardType,
-    this.textCapitalization = TextCapitalization.none,
-    this.prefixIcon,
-    this.onTap,
-    this.readonly,
-    this.inputKey,
-  });
+  const TextInput(
+      {super.key,
+      // required this.onSearchChange,
+      required this.hinText,
+      required this.label,
+      required this.textIsEmpty,
+      required this.inputController,
+      this.lenLimitTextInpFmt,
+      this.obscureText = false,
+      this.validation,
+      this.textInputAction,
+      this.keyboardType,
+      this.textCapitalization = TextCapitalization.none,
+      this.prefixIcon,
+      this.suffixIcon,
+      this.onTap,
+      this.readonly,
+      this.inputKey,
+      this.onTapSuffixIcon});
 
   @override
   State<TextInput> createState() => _TextInputState();
@@ -59,11 +64,21 @@ class _TextInputState extends State<TextInput> {
       keyboardType: widget.keyboardType,
       textCapitalization: widget.textCapitalization!,
       readOnly: (widget.readonly) ?? false,
+      obscureText: widget.obscureText!,
       onTap: widget.onTap,
       decoration: InputDecoration(
         hintText: widget.hinText,
         prefixIcon:
             (widget.prefixIcon) != null ? Icon(widget.prefixIcon) : null,
+        suffixIcon: (widget.suffixIcon) != null
+            ? IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  widget.inputController.clear();
+                  widget.onTapSuffixIcon!(widget.inputController.text);
+                },
+              )
+            : null,
         label: Text(
           widget.label,
           style: Styles.textLabel,

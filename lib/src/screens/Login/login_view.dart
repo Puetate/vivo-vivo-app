@@ -97,7 +97,7 @@ class _LoginViewState extends State<LoginView> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(50),
                                 FilteringTextInputFormatter.deny(
-                                    Validations.exprWithoutWhitespace),
+                                    Validations.expDenyWhitespace),
                               ],
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.emailAddress,
@@ -176,10 +176,10 @@ class _LoginViewState extends State<LoginView> {
                                   showHomePage(
                                       context, userNameValue, passwordValue);
                                 }),
-                            const SizedBox(
+                            /*  const SizedBox(
                               height: 15,
-                            ),                            
-                            const ButtonRememberPassword()
+                            ),
+                            const ButtonRememberPassword() */
                           ]),
                         ),
                       ],

@@ -21,8 +21,10 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
   }
 
   @override
-  Future<Map<String, dynamic>> postChangePassword(Map changePasswordData) {
-    throw UnimplementedError();
+  Future postChangePassword(
+      String id, Map<String, dynamic> changePasswordData) async {
+    var res = await Api.patch("auth/change-password/$id", changePasswordData);
+    return res;
   }
 
   @override
@@ -49,7 +51,6 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
   Future saveUser(FamilyGroup user, Person person, PersonInfo personInfo,
       PersonDisability? personDisability) async {
     Map<String, String> userData = {
-      "username": user.username,
       "email": user.email,
       "password": user.password,
     };

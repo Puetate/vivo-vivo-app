@@ -1,4 +1,5 @@
 import 'package:vivo_vivo_app/src/domain/api/vivo_vivo_api.dart';
+import 'package:vivo_vivo_app/src/domain/models/family_group_request.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/repository/api_repository_family_group.dart';
 
@@ -36,6 +37,12 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
   @override
   Future getUserByDni(String dni) async {
     var res = await Api.httpGet("user/dni/$dni");
+    return res;
+  }
+
+  @override
+  Future postFamilyGroup(FamilyGroupRequest familyGroupRequest) async {
+    var res = await Api.post("family-group", familyGroupRequest.toJson());
     return res;
   }
 }

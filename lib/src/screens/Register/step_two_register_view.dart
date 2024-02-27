@@ -1,4 +1,3 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.Dart';
 import 'package:gap/gap.dart';
@@ -202,7 +201,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(30),
                                     FilteringTextInputFormatter.deny(
-                                        Validations.exprWithoutWhitespace),
+                                        Validations.expDenyWhitespace),
                                   ],
                                   controller: email,
                                   keyboardType: TextInputType.emailAddress,
@@ -233,7 +232,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(15),
                                     FilteringTextInputFormatter.deny(
-                                        Validations.exprWithoutWhitespace),
+                                        Validations.expDenyWhitespace),
                                   ],
                                   controller: password,
                                   textInputAction: TextInputAction.done,
@@ -263,7 +262,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(15),
                                     FilteringTextInputFormatter.deny(
-                                        Validations.exprWithoutWhitespace),
+                                        Validations.expDenyWhitespace),
                                   ],
                                   controller: passwordConfirm,
                                   textInputAction: TextInputAction.done,
@@ -353,7 +352,6 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
 
       FamilyGroup user = FamilyGroup(
         password: passwordConfirm.text,
-        username: userNameController.text,
         email: email.text,
       );
       var res = await serviceUser.saveUser(
@@ -420,42 +418,6 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                   ),
                 ),
                 titlePadding: const EdgeInsets.all(0),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                        "Recuerda tu nombre de usuario para poder ingresar"),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                "Usuario: ",
-                                style: Styles.textStyleBottomTitle
-                                    .copyWith(fontSize: 17),
-                              ),
-                              Gap(5),
-                              Text(user.username),
-                            ],
-                          ),
-                          Gap(30),
-                          IconButton(
-                              onPressed: () =>
-                                  FlutterClipboard.copy(user.username),
-                              icon: Icon(
-                                Icons.content_paste_rounded,
-                                color: Styles.primaryColor,
-                                size: 33,
-                              ),
-                              iconSize: 30),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
                 actions: [
                   TextButton(
                       onPressed: (() => Navigator.of(context)

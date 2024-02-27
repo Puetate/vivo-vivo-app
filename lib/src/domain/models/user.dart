@@ -1,18 +1,12 @@
-// To parse this JSON data, do
-//
-//     final user = userFromJson(jsonString);
-
 import 'dart:convert';
 
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
 
-FamilyGroup userFromJson(String str) => FamilyGroup.fromJson(json.decode(str));
 
 String userToJson(FamilyGroup data) => json.encode(data.toJson());
 
 class FamilyGroup {
   String? id;
-  String username;
   String email;
   String password;
   Person? person;
@@ -22,7 +16,6 @@ class FamilyGroup {
 
   FamilyGroup({
     this.id,
-    required this.username,
     required this.email,
     required this.password,
     this.person,
@@ -33,7 +26,6 @@ class FamilyGroup {
 
   factory FamilyGroup.fromJson(Map<String, dynamic> json) => FamilyGroup(
         id: json["_id"],
-        username: json["username"],
         email: json["email"],
         password: json["password"],
         person: Person.fromJson(json["person"]),
@@ -44,7 +36,6 @@ class FamilyGroup {
 
   Map<String, dynamic> toJson() => {
         "_id": id,
-        "username": username,
         "email": email,
         "password": password,
         "person": person!.toJson(),

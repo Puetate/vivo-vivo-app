@@ -9,7 +9,7 @@ abstract class ApiRepositoryUserInterface {
   Future postIdOneSignal(String id, String idOneSignal);
   Future saveUser(FamilyGroup user, Person person, PersonInfo personInfo,
       PersonDisability personDisability);
-  Future<Map<String, dynamic>> postChangePassword(Map changePasswordData);
+  Future postChangePassword(String id, Map<String, dynamic> changePasswordData);
   Future<Map<String, dynamic>> postSendEmailChangePassword(
       Map changePasswordData);
   Future<bool> putStateByUser(String userId, String state);

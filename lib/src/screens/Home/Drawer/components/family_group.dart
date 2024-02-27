@@ -15,11 +15,15 @@ class FamilyGroup extends StatefulWidget {
 }
 
 class _FamilyGroupState extends State<FamilyGroup> {
+  late Future<List<FamilyGroupResponse>>
+      _familyGroupFuture; // Declara la variable para almacenar el Future
+
   ApiRepositoryFamilyGroupImpl familyGroupServices =
       ApiRepositoryFamilyGroupImpl();
 
   Future<List<FamilyGroupResponse>> getAllFamilyGroupByUserId(
       String userId) async {
+    print("gdsfsgdfgfghfgh");
     var res = await familyGroupServices.getAllFamilyGroupByUserId(userId);
     if (res.data == null || res.error as bool)
       return List<FamilyGroupResponse>.empty();
@@ -32,18 +36,33 @@ class _FamilyGroupState extends State<FamilyGroup> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _familyGroupFuture = getAllFamilyGroupByUserId(
+        widget.userId); // Inicializa el Future en initState
+  }
+
+  Future<void> reloadData() async {
+    setState(() {
+      _familyGroupFuture = getAllFamilyGroupByUserId(widget.userId);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    const String textButtonAddFamilyMember = "Añadir nuevo familiar";
+    const String textButtonAddFamilyMember = "Agregar";
+    String grupoFamiliar = 'Núcleo de Confianza';
     return Material(
       child: Scaffold(
         appBar: AppBar(
             leading: Container(),
             centerTitle: true,
-            title: const Text('Grupo Familiar')),
+            title: Text(grupoFamiliar)),
         body: SafeArea(
           bottom: false,
           child: FutureBuilder<List<FamilyGroupResponse>>(
-            future: getAllFamilyGroupByUserId(widget.userId),
+            future: _familyGroupFuture,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return snapshot.data!.isNotEmpty
@@ -78,7 +97,11 @@ class _FamilyGroupState extends State<FamilyGroup> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             FormFamilyMember formFamilyMember = FormFamilyMember();
-            formFamilyMember.dialogAddFamilyMember(context);
+            formFamilyMember.dialogAddFamilyMember(context, reloadData);
+            setState(() {
+              _familyGroupFuture = getAllFamilyGroupByUserId(widget
+                  .userId); // Actualiza el Future después de cerrar el diálogo
+            });
           },
           label: const Text(textButtonAddFamilyMember),
           icon: const Icon(Icons.person_add),
