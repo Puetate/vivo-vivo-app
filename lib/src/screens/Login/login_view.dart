@@ -149,9 +149,21 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(height: 30),
                             ElevatedButton(
                                 style: ElevatedButton.styleFrom(
+                                  disabledForegroundColor: Styles.white,
+                                  disabledBackgroundColor:
+                                      Styles.primaryColor.withAlpha(220),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 15),
                                 ),
+                                onPressed: _loading
+                                    ? null
+                                    : () {
+                                        userNameValue = email.text;
+                                        passwordValue = password.text;
+
+                                        showHomePage(context, userNameValue,
+                                            passwordValue);
+                                      },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -168,14 +180,7 @@ class _LoginViewState extends State<LoginView> {
                                         ),
                                       )
                                   ],
-                                ),
-                                onPressed: () {
-                                  userNameValue = email.text;
-                                  passwordValue = password.text;
-
-                                  showHomePage(
-                                      context, userNameValue, passwordValue);
-                                }),
+                                )),
                             /*  const SizedBox(
                               height: 15,
                             ),
@@ -214,8 +219,9 @@ class _LoginViewState extends State<LoginView> {
     if (formKey.currentState!.validate()) {
       formKey.currentState?.save();
       if (!_loading) {
-        setState(() => initLoading());
+        initLoading();
         await loginController.showHomePage(userName, password);
+        finalLoading();
       }
     }
   }
@@ -235,13 +241,9 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void initLoading() {
-    _loading = true;
-    textButtonSesion = "Iniciando";
-  }
-
-/*   Future<void> openUserPreferences(context) async {
-    SchedulerBinding.instance.scheduleFrameCallback((timeStamp) {
-      loginController.openPreferences(context);
+    setState(() {
+      _loading = true;
+      textButtonSesion = "Iniciando";
     });
-  } */
+  }
 }

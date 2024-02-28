@@ -15,7 +15,7 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_alarm_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/alarm.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
-import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
+import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
 import 'package:vivo_vivo_app/src/providers/geolocation_provider.dart';
 import 'package:vivo_vivo_app/src/providers/socket_provider.dart';
@@ -98,7 +98,7 @@ class HomeController {
   Future<void> setIdOneSignal(String idOS) async {
     UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
     if (user.idOneSignal == null || (user.idOneSignal != idOS)) {
-      var res = await userService.postIdOneSignal(user.idUser, idOS);
+      var res = await userService.postIdOneSignal(user.userID.toString(), idOS);
       if (res == null || res.error) {
         OneSignal.logout();
         return;
@@ -117,7 +117,7 @@ class HomeController {
   void onAlerts() {
     UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
 
-    socketProvider.onAlerts("$EVENT-${user.idPerson}", (_) {
+    socketProvider.onAlerts("$EVENT-${user.personID}", (_) {
       getUsersAlerts();
     });
   }
@@ -126,7 +126,7 @@ class HomeController {
     UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
 
     var res =
-        await familyGroupService.getFamilyGroupByUserInDanger(user.idUser);
+        await familyGroupService.getFamilyGroupByUserInDanger(user.userID.toString());
     if (res == null || res.error) return;
     int count = res.data["count"];
     onStateGetAlerts(null, count);
@@ -151,7 +151,7 @@ class HomeController {
       return;
     }
     await notificationService.sendNotificationFamilyGroup(
-        user.idUser, user.names);
+        user.userID.toString(), user.names);
     // alarmProvider.setIsProcessSendLocation(false);
     alarmState.setIsSendLocation(true);
     alarmState.setTextButton("Se esta enviando tu ubicación...");
@@ -187,7 +187,8 @@ class HomeController {
   void getLivePosition(UserAuth user) {
     var location = geoLocationProvider.getLocation;
     location.enableBackgroundMode(enable: true);
-    location.changeSettings(accuracy: LocationAccuracy.high, distanceFilter: 0, interval: 400);
+    location.changeSettings(
+        accuracy: LocationAccuracy.high, distanceFilter: 0, interval: 400);
     location.changeNotificationOptions(
         channelName: "channel",
         subtitle: "Se esta enviando tu ubicación a tu núcleo de confianza.",
@@ -204,7 +205,7 @@ class HomeController {
       Map data = {
         "position": {"lat": position.latitude, "lng": position.longitude},
         "familyMemberUserIds": familyGroupsIds,
-        "userId": user.idUser
+        "userId": user.userID
       };
       geoLocationProvider.setLocationData = position;
       socketProvider.emitLocation("send-alarm", data);
@@ -216,7 +217,7 @@ class HomeController {
   Future<String> postAlarmBD(double lat, double lng, UserAuth user) async {
     AlarmRequest alarmRequest = AlarmRequest(
       alarm: Alarm(
-        user: user.idUser,
+        user: user.userID.toString(),
         alarmType: MOBILE,
       ),
       alarmDetail: AlarmDetail(
@@ -233,7 +234,7 @@ class HomeController {
 
   Future<void> getFamilyGroup(bool isNewAlert, UserAuth user) async {
     if (isNewAlert) {
-      var res = await familyGroupService.getFamilyMembersByUser(user.idUser);
+      var res = await familyGroupService.getFamilyMembersByUser(user.userID.toString());
       if (res == null || res.error) return;
 
       List<String> familyGroupIds = [];

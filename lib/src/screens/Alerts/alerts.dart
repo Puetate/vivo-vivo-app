@@ -6,9 +6,9 @@ import '../../utils/app_styles.dart';
 
 /// It's a StatelessWidget that receives a list of UserAlerts and displays them in a ListView.builder
 class Alerts extends StatefulWidget {
-  final String userId;
+  final int userID;
 
-  const Alerts({super.key, required this.userId});
+  const Alerts({super.key, required this.userID});
 
   @override
   State<Alerts> createState() => _AlertsState();
@@ -30,7 +30,7 @@ class _AlertsState extends State<Alerts> {
             bottom: false,
             child: FutureBuilder(
                 future:
-                    familyGroupService.getFamilyGroupByUserId(widget.userId),
+                    familyGroupService.getFamilyGroupByUserId(widget.userID.toString()),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return snapshot.data!.isNotEmpty

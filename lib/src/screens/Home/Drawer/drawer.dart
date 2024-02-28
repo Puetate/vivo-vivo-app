@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
+import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/family_group.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/form_change_pasword.dart';
 import 'package:vivo_vivo_app/src/screens/Home/controllers/home_controller.dart';
@@ -100,10 +100,9 @@ class _EndDrawerState extends State<EndDrawer> {
                               shape: const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(20))),
-                              builder:
-                                  (context) => FamilyGroup(
-                                    userId: widget.user.idUser,
-                                  ),
+                              builder: (context) => FamilyGroup(
+                                userId: widget.user.userID.toString(),
+                              ),
                             )),
                     const Divider(
                       height: 10,

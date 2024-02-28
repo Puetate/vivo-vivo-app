@@ -14,14 +14,14 @@ String familyGroupToJson(FamilyGroupResponse data) =>
 String HOST = dotenv.env['HOST']!;
 
 class FamilyGroupResponse {
-  String? id;
+  int? userID;
   String names;
   String dni;
   String avatar;
   String phone;
 
   FamilyGroupResponse({
-    this.id,
+    this.userID,
     required this.names,
     required this.dni,
     required this.avatar,
@@ -30,10 +30,10 @@ class FamilyGroupResponse {
 
   factory FamilyGroupResponse.fromJson(Map<String, dynamic> json) =>
       FamilyGroupResponse(
-        id: json["id"],
+        userID: json["userID"],
         names: json["names"],
         dni: json["dni"],
-        avatar: "$HOST/${json["avatar"]}",
+        avatar: "$HOST${json["avatar"]}",
         phone: json["phone"],
       );
 

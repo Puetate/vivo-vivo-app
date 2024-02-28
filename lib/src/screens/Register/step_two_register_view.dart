@@ -49,8 +49,6 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
   Widget build(BuildContext context) {
     final size = AppLayout.getSize(context);
     personArguments = ModalRoute.of(context)!.settings.arguments as Person;
-    userNameController.text =
-        getUserName(personArguments!.firstName, personArguments!.dni);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -144,27 +142,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                     ),
                                   ],
                                 ),
-                                TextFormField(
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(10),
-                                  ],
-                                  readOnly: true,
-                                  controller: userNameController,
-                                  textInputAction: TextInputAction.next,
-                                  autofocus: true,
-                                  keyboardType: TextInputType.name,
-                                  decoration: InputDecoration(
-                                    hintText: "Ej. P041357484",
-                                    prefixIcon: const Icon(
-                                        Icons.person_outline_rounded),
-                                    label: Text(
-                                      "Nombre de Usuario",
-                                      style: Styles.textLabel,
-                                    ),
-                                  ),
-                                  onSaved: (value) =>
-                                      {userNameController.text = value!},
-                                ),
+
                                 TextFormField(
                                   inputFormatters: [
                                     LengthLimitingTextInputFormatter(10),
@@ -409,13 +387,17 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                         "¡Perfecto!",
                         style: Styles.textStyleBody,
                       ),
-                      /*  , */
-                      Text(
-                        "${res.data["message"]}",
-                        style: Styles.textStyleBody,
-                      ),
                     ],
                   ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "${res.data["message"]}",
+                      style: Styles.textStyleTitle,
+                    ),
+                  ],
                 ),
                 titlePadding: const EdgeInsets.all(0),
                 actions: [
@@ -429,10 +411,6 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                 ],
               ));
     }
-  }
-
-  String getUserName(String name, String idCard) {
-    return (name.substring(0, 1) + idCard);
   }
 
   Future<void> _navigateAndReturnDirecction() async {

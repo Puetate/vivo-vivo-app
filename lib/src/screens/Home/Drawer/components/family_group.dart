@@ -52,6 +52,9 @@ class _FamilyGroupState extends State<FamilyGroup> {
   @override
   Widget build(BuildContext context) {
     const String textButtonAddFamilyMember = "Agregar";
+    const String errorMessage =
+        "No tiene ninguna persona de confianza registrada";
+
     String grupoFamiliar = 'Núcleo de Confianza';
     return Material(
       child: Scaffold(
@@ -75,15 +78,10 @@ class _FamilyGroupState extends State<FamilyGroup> {
                           );
                         },
                       )
-                    : const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          child: Text(
-                            "No tiene agregado ningún miembro",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      );
+                    : const MessageIsEmptyCoreTrust(errorMessage: errorMessage);
+              } else if (snapshot.hasError) {
+                return const MessageIsEmptyCoreTrust(
+                    errorMessage: errorMessage);
               } else {
                 return Center(
                   child: CircularProgressIndicator(
@@ -106,6 +104,29 @@ class _FamilyGroupState extends State<FamilyGroup> {
           label: const Text(textButtonAddFamilyMember),
           icon: const Icon(Icons.person_add),
           backgroundColor: Styles.primaryColor,
+        ),
+      ),
+    );
+  }
+}
+
+class MessageIsEmptyCoreTrust extends StatelessWidget {
+  const MessageIsEmptyCoreTrust({
+    super.key,
+    required this.errorMessage,
+  });
+
+  final String errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Text(
+          textAlign: TextAlign.center,
+          errorMessage,
+          style: Styles.textStyleTitle,
         ),
       ),
     );

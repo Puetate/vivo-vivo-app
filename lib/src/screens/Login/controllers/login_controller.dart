@@ -4,6 +4,7 @@ import 'package:vivo_vivo_app/src/commons/create_credentials.dart';
 
 import 'package:vivo_vivo_app/src/commons/shared_preferences.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl.dart';
+import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
 // import 'package:vivo_vivo_app/src/global/global_variable.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
@@ -22,16 +23,15 @@ class LoginController {
     userProvider = context.read<UserProvider>();
   }
 
-  Future<void> showHomePage( String userName,
-      String password) async {
+  Future<void> showHomePage(String userName, String password) async {
     var res = await userService.getUser(createCredentials(userName, password));
-    if (res == null || res.error) return onStateConnect(false);
+    if (res == null || res.error) return;
     final UserPrefProvider user = UserPrefProvider.fromJson(res.data);
     userProvider.getUser(user.getUser, user.getToken);
     saveCredentials(user.getUser, user.getToken);
     Navigator.of(context).pushReplacementNamed(HomeView.id);
   }
-  
+
   Future<void> saveCredentials(UserAuth user, String token) async {
     var userString = userAuthToJson(user);
     SharedPrefs().user = userString;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
 
 class UserProvider with ChangeNotifier {

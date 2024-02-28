@@ -41,20 +41,6 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
   bool isDisability = false;
   XFile? imageFile;
   bool isPhoto = false;
-  List<String> listMaritalStatus = [
-    'Casado',
-    'Soltero',
-    'Divorciado',
-    'Viudo',
-    'Union libre'
-  ];
-  List<String> listEthnic = [
-    'Mestizo',
-    'Afroecuatoriano',
-    'Indigena',
-    'Blanca'
-  ];
-  List<String> listGender = ['Masculino', 'Femenino', 'No especificado'];
 
   @override
   void initState() {
@@ -353,9 +339,9 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
         avatar: imageFile,
         personInfo: PersonInfo(
           birthDate: DateTime.parse(birthDateCast),
-          maritalStatus: maritalStatus.text,
-          gender: gender.text,
-          ethnic: ethnic.text,
+          maritalStatusID: int.parse(maritalStatus.text),
+          genderID: int.parse(gender.text),
+          ethnicID: int.parse(ethnic.text),
           address: "",
           phone: "",
         ),

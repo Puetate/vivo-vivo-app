@@ -127,27 +127,19 @@ class FormFamilyMember {
     //1805283452
     var res = await familyGroupServices.getUserByDni(dni);
     if (res.data == null || res.error as bool) return null;
-
-    FamilyGroup familyGroup = FamilyGroup.fromJson(res.data);
-    var person = familyGroup.person;
-    Map<String, dynamic> familyGroupResponse = {
-      "id": familyGroup.id,
-      "names": "${person!.firstName} ${person.middleName} ${person.lastNames}",
-      "dni": person.dni,
-      "avatar": person.avatar,
-      "phone": ""
-    };
-    FamilyGroupResponse user =
-        FamilyGroupResponse.fromJson(familyGroupResponse);
-
+    FamilyGroupResponse user = FamilyGroupResponse.fromJson(res.data);
     return user;
   }
 
   Future<void> handleSubmit(BuildContext context, Function reload) async {
-    String id =
-        context.read<UserProvider>().getUserPrefProvider!.getUser.idUser;
+    String id = context
+        .read<UserProvider>()
+        .getUserPrefProvider!
+        .getUser
+        .userID
+        .toString();
     FamilyGroupRequest familyGroupRequest =
-        FamilyGroupRequest(user: id, userFamilyMember: user!.id!);
+        FamilyGroupRequest(user: id, userFamilyMember: user!.userID.toString());
     var res = await familyGroupServices.postFamilyGroup(familyGroupRequest);
     if (res.data == null || res.error as bool) {
       Navigator.of(context).pop();

@@ -9,21 +9,19 @@ import 'package:google_api_headers/google_api_headers.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
-
 class SearchPlaces extends StatefulWidget {
   const SearchPlaces({super.key});
   @override
   State<SearchPlaces> createState() => _SearchPlacesState();
 }
 
-
 class _SearchPlacesState extends State<SearchPlaces> {
-final homeScaffoldKey = GlobalKey<ScaffoldState>();
+  final homeScaffoldKey = GlobalKey<ScaffoldState>();
   late LatLng direction;
   Set<Marker> markersList = {};
   GoogleMapController? googleMapController;
-  static const CameraPosition _initialCameraPosition = CameraPosition(
-      target: LatLng(-1.085854, -78.316637), zoom: 8.0);
+  static const CameraPosition _initialCameraPosition =
+      CameraPosition(target: LatLng(-1.085854, -78.316637), zoom: 8.0);
   final Mode _mode = Mode.overlay;
   String? _currentAddress;
   bool loading = false;
@@ -120,7 +118,8 @@ final homeScaffoldKey = GlobalKey<ScaffoldState>();
       List<Placemark> marksList =
           await placemarkFromCoordinates(position.latitude, position.longitude);
       setState(() {
-        _currentAddress = '${marksList[1].street}, ${marksList[2].street}';
+        _currentAddress =
+            '${marksList[1].subLocality}, ${marksList[1].locality}';
       });
       return true;
     } catch (e) {
@@ -129,7 +128,6 @@ final homeScaffoldKey = GlobalKey<ScaffoldState>();
   }
 
   Future<void> _handlePressButton() async {
-
     Prediction? p = await PlacesAutocomplete.show(
         context: context,
         apiKey: dotenv.env['API_KEY_GOOGLE']!,
@@ -168,7 +166,6 @@ final homeScaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> displayPrediction(
       Prediction? p, ScaffoldState currentState) async {
-
     if (p != null) {
       GoogleMapsPlaces places = GoogleMapsPlaces(
           apiKey: dotenv.env['API_KEY_GOOGLE'],

@@ -181,7 +181,7 @@ class FormComponent {
       _formKey.currentState!.save();
       ApiRepositoryUserImpl apiRepositoryUserImpl = ApiRepositoryUserImpl();
       String id =
-          context.read<UserProvider>().getUserPrefProvider!.getUser.idUser;
+          context.read<UserProvider>().getUserPrefProvider!.getUser.userID.toString();
 
       Map<String, dynamic> changePasswordData = {
         "oldPassword": oldPassword.text,

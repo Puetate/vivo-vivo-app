@@ -10,7 +10,7 @@ import 'package:location/location.dart' as LC;
 import 'package:vivo_vivo_app/src/commons/permissions.dart';
 import 'package:vivo_vivo_app/src/components/photo.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
-import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
+import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/providers/geolocation_provider.dart';
 import 'package:vivo_vivo_app/src/providers/socket_provider.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';

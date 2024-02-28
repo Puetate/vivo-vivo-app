@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 
-import 'package:vivo_vivo_app/src/domain/models/user_pref_provider.dart';
 
 class SocketProvider with ChangeNotifier {
   IO.Socket? _socket;
-  
+
   void connect(UserAuth user) async {
     try {
-      if ( _socket != null ) {
+      if (_socket != null) {
         return;
       }
       _socket = IO.io(
@@ -23,8 +23,8 @@ class SocketProvider with ChangeNotifier {
               .setTransports(['websocket'])
               // .enableAutoConnect()
               .enableReconnection()
-              .setQuery({'userId': user.idUser})
-              .setExtraHeaders({'userId': user.idUser}) // optional
+              .setQuery({'userId': user.userID})
+              .setExtraHeaders({'userId': user.userID}) // optional
               .build());
 
       _socket!.connect();
@@ -42,7 +42,6 @@ class SocketProvider with ChangeNotifier {
   void emitLocation(String event, [dynamic data]) {
     _socket!.emit(event, data);
     notifyListeners();
-
   }
 
   void onLocation(String event, dynamic Function(dynamic) callback) {

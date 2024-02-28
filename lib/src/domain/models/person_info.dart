@@ -1,41 +1,42 @@
 import 'dart:convert';
 
-PersonInfo personInfoFromJson(String str) => PersonInfo.fromJson(json.decode(str));
+PersonInfo personInfoFromJson(String str) =>
+    PersonInfo.fromJson(json.decode(str));
 
 String personInfoToJson(PersonInfo data) => json.encode(data.toJson());
 
 class PersonInfo {
-    String phone;
-    DateTime birthDate;
-    String address;
-    String gender;
-    String ethnic;
-    String maritalStatus;
+  String phone;
+  DateTime birthDate;
+  String address;
+  int genderID;
+  int ethnicID;
+  int maritalStatusID;
 
-    PersonInfo({
-        required this.phone,
-        required this.birthDate,
-        required this.address,
-        required this.gender,
-        required this.ethnic,
-        required this.maritalStatus,
-    });
+  PersonInfo({
+    required this.phone,
+    required this.birthDate,
+    required this.address,
+    required this.genderID,
+    required this.ethnicID,
+    required this.maritalStatusID,
+  });
 
-    factory PersonInfo.fromJson(Map<String, dynamic> json) => PersonInfo(
+  factory PersonInfo.fromJson(Map<String, dynamic> json) => PersonInfo(
         phone: json["phone"],
         birthDate: DateTime.parse(json["birthDate"]),
         address: json["address"],
-        gender: json["gender"],
-        ethnic: json["ethnic"],
-        maritalStatus: json["maritalStatus"],
-    );
+        genderID: json["gender"],
+        ethnicID: json["ethnic"],
+        maritalStatusID: json["maritalStatus"],
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "phone": phone,
         "birthDate": birthDate.toIso8601String(),
         "address": address,
-        "gender": gender,
-        "ethnic": ethnic,
-        "maritalStatus": maritalStatus,
-    };
+        "genderID": genderID,
+        "ethnicID": ethnicID,
+        "maritalStatusID": maritalStatusID,
+      };
 }
