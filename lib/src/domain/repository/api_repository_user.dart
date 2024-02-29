@@ -10,8 +10,8 @@ abstract class ApiRepositoryUserInterface {
   Future saveUser(FamilyGroup user, Person person, PersonInfo personInfo,
       PersonDisability personDisability);
   Future postChangePassword(String id, Map<String, dynamic> changePasswordData);
-  Future<Map<String, dynamic>> postSendEmailChangePassword(
-      Map changePasswordData);
+  Future postSendEmailChangePassword(
+       Map<String, dynamic> changePasswordData);
   Future<bool> putStateByUser(String userId, String state);
   Future<Uint8List> getImageNetwork(String imgUrl);
 }

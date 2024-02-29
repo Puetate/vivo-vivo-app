@@ -95,11 +95,12 @@ class _FamilyGroupState extends State<FamilyGroup> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             FormFamilyMember formFamilyMember = FormFamilyMember();
-            formFamilyMember.dialogAddFamilyMember(context, reloadData);
-            setState(() {
-              _familyGroupFuture = getAllFamilyGroupByUserId(widget
-                  .userId); // Actualiza el Future después de cerrar el diálogo
-            });
+            formFamilyMember
+                .dialogAddFamilyMember(context, reloadData)
+                .whenComplete(() => (setState(() {
+                      _familyGroupFuture = getAllFamilyGroupByUserId(widget
+                          .userId); // Actualiza el Future después de cerrar el diálogo
+                    })));
           },
           label: const Text(textButtonAddFamilyMember),
           icon: const Icon(Icons.person_add),

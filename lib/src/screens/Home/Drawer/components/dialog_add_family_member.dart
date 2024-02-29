@@ -138,8 +138,8 @@ class FormFamilyMember {
         .getUser
         .userID
         .toString();
-    FamilyGroupRequest familyGroupRequest =
-        FamilyGroupRequest(user: id, userFamilyMember: user!.userID.toString());
+    FamilyGroupRequest familyGroupRequest = FamilyGroupRequest(
+        userID: id, userFamilyMemberID: user!.userID.toString());
     var res = await familyGroupServices.postFamilyGroup(familyGroupRequest);
     if (res.data == null || res.error as bool) {
       Navigator.of(context).pop();
