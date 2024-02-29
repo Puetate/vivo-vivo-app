@@ -181,10 +181,10 @@ class _LoginViewState extends State<LoginView> {
                                       )
                                   ],
                                 )),
-                            /*  const SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
-                            const ButtonRememberPassword() */
+                            const ButtonRememberPassword()
                           ]),
                         ),
                       ],

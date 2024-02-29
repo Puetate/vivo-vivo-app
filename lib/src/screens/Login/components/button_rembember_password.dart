@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vivo_vivo_app/src/screens/RemeberPassword/remember_password.dart';
 
 class ButtonRememberPassword extends StatelessWidget {
   const ButtonRememberPassword({
@@ -12,13 +13,10 @@ class ButtonRememberPassword extends StatelessWidget {
       children: [
         TextButton(
             style: TextButton.styleFrom(
-              textStyle: TextStyle(
-                  color:
-                      Theme.of(context).primaryColor),
+              textStyle: TextStyle(color: Theme.of(context).primaryColor),
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .pushNamed("/rememberPassword");
+              Navigator.of(context).pushNamed(RememberPassView.id);
             },
             child: const Text(
               "¿Olvidó su contraseña?",

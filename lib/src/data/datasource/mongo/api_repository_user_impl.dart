@@ -37,9 +37,10 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
   }
 
   @override
-  Future<Map<String, dynamic>> postSendEmailChangePassword(
-      Map changePasswordData) {
-    throw UnimplementedError();
+  Future postSendEmailChangePassword(
+      Map<String, dynamic> changePasswordData) async {
+    var res = await Api.post("auth/recover-password", changePasswordData);
+    return res;
   }
 
   @override
