@@ -112,7 +112,8 @@ class _EndDrawerState extends State<EndDrawer> {
                         trailing: const Icon(Icons.lock_rounded),
                         onTap: () {
                           FormComponent formComponent = FormComponent();
-                          formComponent.openFormChangePassword(context);
+                          formComponent.openFormChangePassword(context).whenComplete(() => Navigator.pop(context)
+                          );
                         }),
                   ],
                 ),

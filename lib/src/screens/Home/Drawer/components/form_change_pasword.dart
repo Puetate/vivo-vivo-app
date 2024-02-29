@@ -140,11 +140,6 @@ class FormComponent {
                           onPressed: loading
                               ? null
                               : () async {
-                                  setState(() {
-                                    textButton = "Cambiando";
-                                    loading = true;
-                                  });
-
                                   await _changePassword(context, setState);
                                 },
                           child: Row(
@@ -179,9 +174,17 @@ class FormComponent {
       BuildContext context, StateSetter setState) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        textButton = "Cambiando";
+        loading = true;
+      });
       ApiRepositoryUserImpl apiRepositoryUserImpl = ApiRepositoryUserImpl();
-      String id =
-          context.read<UserProvider>().getUserPrefProvider!.getUser.userID.toString();
+      String id = context
+          .read<UserProvider>()
+          .getUserPrefProvider!
+          .getUser
+          .userID
+          .toString();
 
       Map<String, dynamic> changePasswordData = {
         "oldPassword": oldPassword.text,
