@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:vivo_vivo_app/src/components/text_input.dart' as TX;
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_family_group_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/family_group.dart';
-import 'package:vivo_vivo_app/src/domain/models/family_group_request.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/family_group_request.dart';
 import 'package:vivo_vivo_app/src/domain/models/user.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/card_person.dart';
@@ -17,7 +17,7 @@ import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 class FormFamilyMember {
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
-  FamilyGroupResponse? user;
+  FamilyGroupResponse? userFamilyMember;
   String buttonTextBuscar = "Buscar";
   ApiRepositoryFamilyGroupImpl familyGroupServices =
       ApiRepositoryFamilyGroupImpl();
@@ -83,13 +83,13 @@ class FormFamilyMember {
                     ),
                   ),
                   const Gap(10),
-                  if (user != null) CardPerson(user: user!),
-                  if (loading && (user == null))
+                  if (userFamilyMember != null) CardPerson(user: userFamilyMember!),
+                  if (loading && (userFamilyMember == null))
                     const CircularProgressIndicator.adaptive()
                 ],
               ),
               actions: [
-                if (user != null)
+                if (userFamilyMember != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: Row(
@@ -139,7 +139,7 @@ class FormFamilyMember {
         .userID
         .toString();
     FamilyGroupRequest familyGroupRequest = FamilyGroupRequest(
-        userID: id, userFamilyMemberID: user!.userID.toString());
+        userID: int.parse(id), userFamilyMemberID: userFamilyMember!.userID!);
     var res = await familyGroupServices.postFamilyGroup(familyGroupRequest);
     if (res.data == null || res.error as bool) {
       Navigator.of(context).pop();
@@ -167,7 +167,7 @@ class FormFamilyMember {
       }
       setState(() {
         loading = false;
-        user = foundedUser;
+        userFamilyMember = foundedUser;
       });
     }
   }

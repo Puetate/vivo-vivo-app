@@ -11,13 +11,14 @@ import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 class CardAlert extends StatelessWidget {
   const CardAlert({super.key, required this.userAlert});
   final UserAlert userAlert;
+  final String DANGER = "DANGER";
 
   @override
   Widget build(BuildContext context) {
     final Size size = AppLayout.getSize(context);
     String state =
-        (userAlert.status.toUpperCase() == "DANGER") ? "En peligro" : "Seguro";
-    Color colorState = (userAlert.status.toUpperCase() == "DANGER")
+        (userAlert.status.toUpperCase() == DANGER) ? "En peligro" : "Seguro";
+    Color colorState = (userAlert.status.toUpperCase() == DANGER)
         ? Styles.redText
         : Styles.green;
 

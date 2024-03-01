@@ -20,7 +20,7 @@ class SharedPrefs {
   String get user => _sharedPrefs?.getString(KEY_USER) ?? "";
   String get token => _sharedPrefs?.getString(KEY_TOKEN) ?? "";
   String get state => _sharedPrefs?.getString(KEY_STATE) ?? "";
-  String get idAlarm => _sharedPrefs?.getString(KEY_ID_ALARM) ?? "";
+  int get idAlarm => _sharedPrefs?.getInt(KEY_ID_ALARM) ?? -0;
   String get familyGroupIds =>
       _sharedPrefs?.getString(KEY_FAMILY_GROUP_IDS) ?? "";
 
@@ -36,8 +36,8 @@ class SharedPrefs {
     _sharedPrefs?.setString(KEY_STATE, value);
   }
 
-  set idAlarm(String value) {
-    _sharedPrefs?.setString(KEY_ID_ALARM, value);
+  set idAlarm(int value) {
+    _sharedPrefs?.setInt(KEY_ID_ALARM, value);
   }
 
   set familyGroupIds(String value) {

@@ -1,5 +1,5 @@
 import 'package:vivo_vivo_app/src/domain/api/vivo_vivo_api.dart';
-import 'package:vivo_vivo_app/src/domain/models/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
 import 'package:vivo_vivo_app/src/domain/repository/api_repository_alarm.dart';
 
 class ApiRepositoryAlarmImpl extends ApiRepositoryAlarmInterface {

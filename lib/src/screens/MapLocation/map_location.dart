@@ -62,14 +62,12 @@ class _LocationMapState extends State<LocationMap> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getImage(user.avatar);
     });
-    
   }
 
   void getImage(String avatar) async {
-      imgSource = await getImagesMap(avatar);
-      imgDestination = await getImagesMap(widget.user.avatar);
-    setState(()  {
-    });
+    imgSource = await getImagesMap(avatar);
+    imgDestination = await getImagesMap(widget.user.avatar);
+    setState(() {});
   }
 
   @override
@@ -82,7 +80,6 @@ class _LocationMapState extends State<LocationMap> {
 
   @override
   Widget build(BuildContext context) {
-    
     /*  GeoLocationProvider geoLocationProvider =
         context.watch<GeoLocationProvider>(); */
     LocationData? position =
@@ -91,7 +88,7 @@ class _LocationMapState extends State<LocationMap> {
 
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
     }); */
-      initSocket(context, user);
+    initSocket(context, user);
 
     final Size size = AppLayout.getSize(context);
     return Scaffold(
@@ -235,7 +232,7 @@ class _LocationMapState extends State<LocationMap> {
 
   void changeDestinationPosition(
       Map latlng, BitmapDescriptor imgDestination) async {
-          log(latlng.toString());
+    log(latlng.toString());
     if (count <= 0) {
       final GoogleMapController controller = await _controllerMap.future;
       controller.animateCamera(
@@ -274,12 +271,11 @@ class _LocationMapState extends State<LocationMap> {
       socketProvider.connect(user);
 
       socketProvider.onLocation(
-        widget.user.user,
+        widget.user.userID,
         (data) {
           Map latlng = data["position"];
           changeDestinationPosition(latlng, imgDestination);
-          log(latlng.toString());
-          log("latlng.toString()");
+          // log(latlng.toString());
         },
       );
     } catch (e) {

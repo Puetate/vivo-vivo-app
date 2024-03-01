@@ -30,7 +30,7 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
   @override
   Future postIdOneSignal(String id, String idOneSignal) async {
     Map<String, dynamic> data = {
-      "idOneSignal": idOneSignal,
+      "oneSignalID": idOneSignal,
     };
     var res = await Api.patch("user/$id", data);
     return res;

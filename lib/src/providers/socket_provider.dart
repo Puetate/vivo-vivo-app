@@ -44,8 +44,8 @@ class SocketProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void onLocation(String event, dynamic Function(dynamic) callback) {
-    _socket!.on(event, callback);
+  void onLocation(int event, dynamic Function(dynamic) callback) {
+    _socket!.on(event.toString(), callback);
   }
 
   void onAlerts(String event, dynamic Function(dynamic) callback) {

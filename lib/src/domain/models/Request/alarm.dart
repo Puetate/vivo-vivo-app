@@ -32,55 +32,52 @@ class AlarmRequest {
 }
 
 class Alarm {
-  String? id;
-  String user;
-  String alarmType;
+  int? alarmID;
+  int? alarmTypeID;
+  int userID;
+  String? alarmType;
 
-  Alarm({required this.user, required this.alarmType, this.id});
+  Alarm({required this.userID, this.alarmType, this.alarmID, this.alarmTypeID});
 
   factory Alarm.fromJson(Map<String, dynamic> json) => Alarm(
-        id: json["_id"],
-        user: json["user"],
+        alarmID: json["alarmID"],
+        alarmTypeID: json["alarmTypeID"],
+        userID: json["userID"],
         alarmType: json["alarmType"],
       );
 
   Map<String, dynamic> toJson() => {
-        "user": user,
+        "userID": userID,
         "alarmType": alarmType,
       };
 }
 
 class AlarmDetail {
-  String? alarm;
+  int? alarmID;
   String alarmStatus;
-  DateTime date;
   double latitude;
   double longitude;
-  String? user;
+  int? userID;
 
-  AlarmDetail({
-    this.alarm,
-    required this.alarmStatus,
-    required this.date,
-    required this.latitude,
-    required this.longitude,
-    this.user
-  });
+  AlarmDetail(
+      {this.alarmID,
+      required this.alarmStatus,
+      required this.latitude,
+      required this.longitude,
+      this.userID});
 
   factory AlarmDetail.fromJson(Map<String, dynamic> json) => AlarmDetail(
-        alarm: json["alarm"],
+        alarmID: json["alarm"],
         alarmStatus: json["alarmStatus"],
-        date: DateTime.parse(json["date"]),
         latitude: json["latitude"],
         longitude: json["longitude"],
       );
 
   Map<String, dynamic> toJson() => {
-        "alarm": alarm,
+        "alarmID": alarmID,
         "alarmStatus": alarmStatus,
-        "date": date.toIso8601String(),
         "latitude": latitude,
         "longitude": longitude,
-        "user": user
+        "userID": userID
       };
 }

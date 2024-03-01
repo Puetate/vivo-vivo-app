@@ -23,10 +23,10 @@ class _FamilyGroupState extends State<FamilyGroup> {
 
   Future<List<FamilyGroupResponse>> getAllFamilyGroupByUserId(
       String userId) async {
-    print("gdsfsgdfgfghfgh");
     var res = await familyGroupServices.getAllFamilyGroupByUserId(userId);
-    if (res.data == null || res.error as bool)
+    if (res.data == null || res.error as bool) {
       return List<FamilyGroupResponse>.empty();
+    }
     List<FamilyGroupResponse> users = (res.data as List)
         .map(
           (p) => FamilyGroupResponse.fromJson(p),

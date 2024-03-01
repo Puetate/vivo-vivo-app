@@ -1,4 +1,4 @@
-import 'package:vivo_vivo_app/src/domain/models/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
 
 abstract class ApiRepositoryAlarmInterface {
   Future postAlarm(AlarmRequest alarm);

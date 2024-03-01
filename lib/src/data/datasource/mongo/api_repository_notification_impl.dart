@@ -1,6 +1,9 @@
 import 'package:vivo_vivo_app/src/domain/api/vivo_vivo_api.dart';
-import 'package:vivo_vivo_app/src/domain/models/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/notification_family_group.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
 import 'package:vivo_vivo_app/src/domain/repository/api_repository_notification.dart';
+
+
 
 class ApiRepositoryNotificationImpl extends ApiRepositoryNotificationInterface {
   @override
@@ -14,13 +17,9 @@ class ApiRepositoryNotificationImpl extends ApiRepositoryNotificationInterface {
   }
 
   @override
-  Future sendNotificationFamilyGroup(String userId, String name) async {
-    Map<String, dynamic> data = {
-      "user": userId,
-      "names": name,
-    };
+  Future sendNotificationFamilyGroup(NotificationFamilyGroup notificationFamilyGroup) async {
     var res =
-       await Api.post("push-notification/send-notification-family-group", data);
+       await Api.post("push-notification/send-notification-family-group", notificationFamilyGroup.toJson());
     return res;
   }
 }

@@ -7,8 +7,8 @@ String familyGroupRequestToJson(FamilyGroupRequest data) =>
     json.encode(data.toJson());
 
 class FamilyGroupRequest {
-  String userID;
-  String userFamilyMemberID;
+  int userID;
+  int userFamilyMemberID;
 
   FamilyGroupRequest({
     required this.userID,
@@ -22,7 +22,7 @@ class FamilyGroupRequest {
       );
 
   Map<String, dynamic> toJson() => {
-        "user": userID,
-        "userFamilyMember": userFamilyMemberID,
+        "userID": userID,
+        "userFamilyMemberID": userFamilyMemberID,
       };
 }

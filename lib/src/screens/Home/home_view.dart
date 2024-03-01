@@ -67,7 +67,7 @@ class _HomeViewState extends State<HomeView> {
     });
     homeController.getUsersAlerts();
     initPlatform(context);
-    // onAlerts();
+    onAlerts();
     // homeController.openPermissionLocations();
   }
 
@@ -185,15 +185,6 @@ class _HomeViewState extends State<HomeView> {
                         child: (!alarmProvider.getIsProcessFinalizeLocation)
                             ? Column(
                                 children: [
-                                  /*  ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Styles.redText,
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 15,
-                                            horizontal: size.height * 0.1),
-                                      ),
-                                      child: const Text("Cancelar"),
-                                      onPressed: () {}), */
                                   const Gap(30),
                                   Stack(
                                     alignment: Alignment.center,
@@ -298,7 +289,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void onAlerts() {
-    homeController.onAlerts();
+    homeController.onAlerts(homeController.getUsersAlerts());
   }
 
   void sendLocation(bool isNewAlarm) async {
@@ -311,6 +302,6 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void cancelSendLocation() async {
-    homeController.cancelSendLocation(user.userID.toString());
+    homeController.cancelSendLocation(user.userID);
   }
 }

@@ -13,7 +13,8 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_family_gr
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_notification_impl.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_alarm_impl.dart';
-import 'package:vivo_vivo_app/src/domain/models/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/notification_family_group.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
@@ -23,10 +24,11 @@ import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Home/components/permission_dialog.dart';
 import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
-String EVENT = "update-alarms";
+String EVENT = "update-user-status";
 String DANGER = "DANGER";
 String MOBILE = "MOBILE";
 String OK = "OK";
+typedef FunctionStart = void Function();
 
 class HomeController {
   late final Function(List<UserAlert>? userAlerts, int count) onStateGetAlerts;
@@ -50,18 +52,16 @@ class HomeController {
     socketProvider = context.read<SocketProvider>();
   }
 
-  Future<void> openPreferences(BuildContext contextt) async {
+  Future<void> openPreferences(BuildContext context) async {
     try {
       String userString = SharedPrefs().user;
       String token = SharedPrefs().token;
 
-      if (userString.isNotEmpty && token.isNotEmpty) {
-        final UserAuth user = userAuthFromJsonPreferences(userString);
-        UserProvider userProvider = contextt.read<UserProvider>();
-        userProvider.getUser(user, token);
-      } else {
-        return;
-      }
+      if (userString.isEmpty && token.isEmpty) return;
+
+      final UserAuth user = userAuthFromJsonPreferences(userString);
+      UserProvider userProvider = context.read<UserProvider>();
+      userProvider.getUser(user, token);
     } catch (e) {
       print(e);
       return;
@@ -73,9 +73,6 @@ class HomeController {
     OneSignal.initialize(dotenv.env['API_ONE_SIGNAL']!);
     OneSignal.Notifications.requestPermission(true);
     OneSignal.User.pushSubscription.addObserver((state) {
-      // print(OneSignal.User.pushSubscription.optedIn);
-      print(OneSignal.User.pushSubscription.id);
-      // print(OneSignal.User.pushSubscription.token);
       print(state.current.jsonRepresentation());
       setIdOneSignal(OneSignal.User.pushSubscription.id!);
     });
@@ -103,7 +100,7 @@ class HomeController {
         OneSignal.logout();
         return;
       }
-      user.idOneSignal = res.data["idOneSignal"];
+      user.idOneSignal = res.data["oneSignalID"];
       var userString = userAuthToJson(user);
       SharedPrefs().user = userString;
       return;
@@ -114,19 +111,19 @@ class HomeController {
     socketProvider.connect(user);
   }
 
-  void onAlerts() {
+  void onAlerts(Function startSomething) {
     UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
 
-    socketProvider.onAlerts("$EVENT-${user.personID}", (_) {
-      getUsersAlerts();
+    socketProvider.onAlerts("$EVENT-${user.userID}", (_) {
+      startSomething();
     });
   }
 
   void getUsersAlerts() async {
     UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
 
-    var res =
-        await familyGroupService.getFamilyGroupByUserInDanger(user.userID.toString());
+    var res = await familyGroupService
+        .getFamilyGroupByUserInDanger(user.userID.toString());
     if (res == null || res.error) return;
     int count = res.data["count"];
     onStateGetAlerts(null, count);
@@ -150,9 +147,10 @@ class HomeController {
       alarmState.setIsProcessSendLocation(false);
       return;
     }
-    await notificationService.sendNotificationFamilyGroup(
-        user.userID.toString(), user.names);
-    // alarmProvider.setIsProcessSendLocation(false);
+    NotificationFamilyGroup notificationFamilyGroup =
+        NotificationFamilyGroup(userID: user.userID, names: user.names);
+    await notificationService
+        .sendNotificationFamilyGroup(notificationFamilyGroup);
     alarmState.setIsSendLocation(true);
     alarmState.setTextButton("Se esta enviando tu ubicación...");
     Vibration.vibrate(duration: 1000);
@@ -173,8 +171,8 @@ class HomeController {
       await geoLocationProvider.getCurrentLocation();
       lng = geoLocationProvider.getCurrentPosition!.longitude!;
       lat = geoLocationProvider.getCurrentPosition!.latitude!;
-      String idAlarm = await postAlarmBD(lat, lng, user);
-      if (idAlarm.isEmpty) return false;
+      int idAlarm = await postAlarmBD(lat, lng, user);
+      if (idAlarm.isNegative) return false;
       SharedPrefs().idAlarm = idAlarm;
       await getFamilyGroup(isNewAlarm, user);
       SharedPrefs().state = DANGER;
@@ -198,14 +196,13 @@ class HomeController {
         onTapBringToFront: true);
     geoLocationProvider.setIsSendLocation = true;
     if (SharedPrefs().familyGroupIds.isEmpty) return;
-    var familyGroupsIds =
-        jsonDecode(SharedPrefs().familyGroupIds).cast<String>();
+    var familyGroupsIds = jsonDecode(SharedPrefs().familyGroupIds).cast<int>();
     var locationSubscription =
         location.onLocationChanged.listen((LocationData position) {
       Map data = {
         "position": {"lat": position.latitude, "lng": position.longitude},
         "familyMemberUserIds": familyGroupsIds,
-        "userId": user.userID
+        "userID": user.userID
       };
       geoLocationProvider.setLocationData = position;
       socketProvider.emitLocation("send-alarm", data);
@@ -214,31 +211,29 @@ class HomeController {
     geoLocationProvider.setLocationSubscription = locationSubscription;
   }
 
-  Future<String> postAlarmBD(double lat, double lng, UserAuth user) async {
+  Future<int> postAlarmBD(double lat, double lng, UserAuth user) async {
     AlarmRequest alarmRequest = AlarmRequest(
       alarm: Alarm(
-        user: user.userID.toString(),
+        userID: user.userID,
         alarmType: MOBILE,
       ),
-      alarmDetail: AlarmDetail(
-          alarmStatus: DANGER,
-          date: DateTime.now(),
-          latitude: lat,
-          longitude: lng),
+      alarmDetail:
+          AlarmDetail(alarmStatus: DANGER, latitude: lat, longitude: lng),
     );
     var res = await alarmService.postAlarm(alarmRequest);
-    if (res == null || res.error) return '';
+    if (res == null || res.error) return -0;
     final Alarm alarm = Alarm.fromJson(res.data);
-    return alarm.id!;
+    return alarm.alarmID!;
   }
 
   Future<void> getFamilyGroup(bool isNewAlert, UserAuth user) async {
     if (isNewAlert) {
-      var res = await familyGroupService.getFamilyMembersByUser(user.userID.toString());
+      var res = await familyGroupService
+          .getFamilyMembersByUser(user.userID.toString());
       if (res == null || res.error) return;
 
-      List<String> familyGroupIds = [];
-      familyGroupIds = res.data.cast<String>();
+      List<int> familyGroupIds = [];
+      familyGroupIds = res.data.cast<int>();
       SharedPrefs().familyGroupIds = jsonEncode(familyGroupIds);
     }
   }
@@ -255,17 +250,16 @@ class HomeController {
     geoLocationProvider.stopListen();
   }
 
-  void cancelSendLocation(String userId) async {
+  void cancelSendLocation(int userId) async {
     geoLocationProvider.stopListen();
     await geoLocationProvider.getCurrentLocation();
     // location.enableBackgroundMode(enable: false);
     AlarmDetail alarmDetail = AlarmDetail(
-      alarm: SharedPrefs().idAlarm,
+      alarmID: SharedPrefs().idAlarm,
       alarmStatus: OK,
-      date: DateTime.now(),
       latitude: geoLocationProvider.locationData.latitude!,
       longitude: geoLocationProvider.locationData.longitude!,
-      user: userId,
+      userID: userId,
     );
     var res = await alarmService.postAlarmDetail(alarmDetail);
     if (res == null || res.error) {

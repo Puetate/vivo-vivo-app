@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_family_group_impl.dart';
+import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/screens/Alerts/components/card_alert.dart';
 
 import '../../utils/app_styles.dart';
@@ -18,6 +19,35 @@ class _AlertsState extends State<Alerts> {
   ApiRepositoryFamilyGroupImpl familyGroupService =
       ApiRepositoryFamilyGroupImpl();
 
+  late Future<List<UserAlert>> _familyGroupFuture;
+
+  Future<List<UserAlert>> getFamilyGroupByUserId(
+      int userId) async {
+    var res = await familyGroupService.getFamilyGroupByUserId(userId);
+    if (res.data == null || res.error as bool) {
+      return List<UserAlert>.empty();
+    }
+    List<UserAlert> users = (res.data as List)
+        .map(
+          (p) => UserAlert.fromJson(p),
+        )
+        .toList();
+    return users;
+  }
+
+  Future<void> reloadData() async {
+    setState(() {
+      _familyGroupFuture = getFamilyGroupByUserId(widget.userID);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+     _familyGroupFuture = getFamilyGroupByUserId(
+        widget.userID);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -29,8 +59,7 @@ class _AlertsState extends State<Alerts> {
         body: SafeArea(
             bottom: false,
             child: FutureBuilder(
-                future:
-                    familyGroupService.getFamilyGroupByUserId(widget.userID.toString()),
+                future: _familyGroupFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return snapshot.data!.isNotEmpty

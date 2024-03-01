@@ -12,27 +12,27 @@ String userAlertToJson(UserAlert data) => json.encode(data.toJson());
 String HOST = dotenv.env['HOST']!;
 
 class UserAlert {
-  String user;
+  int userID;
   String avatar;
   String names;
   String status;
 
   UserAlert({
-    required this.user,
+    required this.userID,
     required this.avatar,
     required this.names,
     required this.status,
   });
 
   factory UserAlert.fromJson(Map<String, dynamic> json) => UserAlert(
-        user: json["user"],
+        userID: json["userID"],
         avatar: "$HOST/${json["avatar"]}",
         names: json["names"],
         status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
-        "user": user,
+        "userID": userID,
         "avatar": avatar,
         "names": names,
         "status": status,

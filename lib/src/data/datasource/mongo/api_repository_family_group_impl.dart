@@ -1,5 +1,5 @@
 import 'package:vivo_vivo_app/src/domain/api/vivo_vivo_api.dart';
-import 'package:vivo_vivo_app/src/domain/models/family_group_request.dart';
+import 'package:vivo_vivo_app/src/domain/models/Request/family_group_request.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/repository/api_repository_family_group.dart';
 
@@ -11,7 +11,7 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
   }
 
   @override
-  Future getFamilyGroupByUserId(String userId) async {
+  Future getFamilyGroupByUserId(int userId) async {
     var res = await Api.httpGet("family-group/family-member/$userId");
     if (res.data == null || res.error as bool) return List<UserAlert>.empty();
     List<UserAlert> usersAlerts = (res.data as List)

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.Dart';
 import 'package:vivo_vivo_app/src/components/text_input.dart' as TX;
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl.dart';
+import 'package:vivo_vivo_app/src/screens/Login/login_view.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 import 'package:vivo_vivo_app/src/utils/app_validations.dart';
 import 'package:vivo_vivo_app/src/utils/snackbars.dart';
@@ -176,7 +176,7 @@ class _RememberPassViewState extends State<RememberPassView> {
 
         ScaffoldMessenger.of(context).showSnackBar(
             MySnackBars.successSnackBar(res.data["message"], "¡Excelente!"));
-        Navigator.of(context).pushReplacementNamed("/");
+        Navigator.of(context).pushReplacementNamed(LoginView.id);
       }
     }
   }
