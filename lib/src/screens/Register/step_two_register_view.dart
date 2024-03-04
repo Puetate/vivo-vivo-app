@@ -344,24 +344,6 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
           textButtonSesion = "Registrarse";
           _loading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          elevation: 15,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-          backgroundColor: Colors.red[400],
-          content: const Row(
-            children: [
-              Icon(
-                Icons.clear_outlined,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Text(' Error al ingresar el Usuario'),
-            ],
-          ),
-        ));
         return;
       }
       // final size = AppLayout.getSize(context);
@@ -403,7 +385,8 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                 actions: [
                   TextButton(
                       onPressed: (() => Navigator.of(context)
-                          .pushReplacementNamed(LoginView.id)),
+                          .pushNamedAndRemoveUntil(
+                              LoginView.id, (Route<dynamic> route) => false)),
                       child: Text(
                         "OK",
                         style: Styles.textLabel.copyWith(color: Colors.blue),

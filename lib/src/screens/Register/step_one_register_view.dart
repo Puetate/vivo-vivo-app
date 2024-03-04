@@ -200,7 +200,7 @@ class _StepOneRegisterViewState extends State<StepOneRegisterView> {
                                         context: context,
                                         initialDate: DateTime(2000),
                                         firstDate: DateTime(1950),
-                                        lastDate: DateTime(2101)))!;
+                                        lastDate: DateTime(2101)));
                                     if (pickerDate != null) {
                                       final dateFormat =
                                           DateFormat('dd/MM/yyyy')
