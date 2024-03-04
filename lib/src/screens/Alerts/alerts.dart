@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_family_group_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/screens/Alerts/components/card_alert.dart';
+import 'package:vivo_vivo_app/src/screens/Home/controllers/home_controller.dart';
 
 import '../../utils/app_styles.dart';
 
@@ -18,24 +19,24 @@ class Alerts extends StatefulWidget {
 class _AlertsState extends State<Alerts> {
   ApiRepositoryFamilyGroupImpl familyGroupService =
       ApiRepositoryFamilyGroupImpl();
+  late final HomeController homeController;
 
   late Future<List<UserAlert>> _familyGroupFuture;
 
-  Future<List<UserAlert>> getFamilyGroupByUserId(
-      int userId) async {
+  Future<List<UserAlert>> getFamilyGroupByUserId(int userId) async {
     var res = await familyGroupService.getFamilyGroupByUserId(userId);
-    if (res.data == null || res.error as bool) {
-      return List<UserAlert>.empty();
-    }
-    List<UserAlert> users = (res.data as List)
+
+    if (res.data == null || res.error as bool) return List<UserAlert>.empty();
+    List<UserAlert> usersAlerts = (res.data as List)
         .map(
           (p) => UserAlert.fromJson(p),
         )
         .toList();
-    return users;
+    return usersAlerts;
   }
 
   Future<void> reloadData() async {
+    if (!mounted) return;
     setState(() {
       _familyGroupFuture = getFamilyGroupByUserId(widget.userID);
     });
@@ -44,8 +45,11 @@ class _AlertsState extends State<Alerts> {
   @override
   void initState() {
     super.initState();
-     _familyGroupFuture = getFamilyGroupByUserId(
-        widget.userID);
+    homeController = HomeController(context);
+    homeController.onAlerts(() {
+      reloadData();
+    });
+    _familyGroupFuture = getFamilyGroupByUserId(widget.userID);
   }
 
   @override

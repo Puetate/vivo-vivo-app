@@ -289,7 +289,9 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void onAlerts() {
-    homeController.onAlerts(homeController.getUsersAlerts());
+    homeController.onAlerts(() {
+      homeController.getUsersAlerts();
+    });
   }
 
   void sendLocation(bool isNewAlarm) async {

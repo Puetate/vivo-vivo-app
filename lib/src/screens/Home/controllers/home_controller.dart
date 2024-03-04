@@ -15,6 +15,7 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_alarm_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/notification_family_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/send_alarm_data.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
@@ -196,16 +197,17 @@ class HomeController {
         onTapBringToFront: true);
     geoLocationProvider.setIsSendLocation = true;
     if (SharedPrefs().familyGroupIds.isEmpty) return;
-    var familyGroupsIds = jsonDecode(SharedPrefs().familyGroupIds).cast<int>();
+    List<int> familyGroupsIds =
+        jsonDecode(SharedPrefs().familyGroupIds).cast<int>();
     var locationSubscription =
         location.onLocationChanged.listen((LocationData position) {
-      Map data = {
-        "position": {"lat": position.latitude, "lng": position.longitude},
-        "familyMemberUserIds": familyGroupsIds,
-        "userID": user.userID
-      };
+      SendAlarmData dataSocketPosition = SendAlarmData(
+          position: Position(lat: position.latitude!, lng: position.longitude!),
+          familyMemberUserIDs: familyGroupsIds,
+          userID: user.userID);
       geoLocationProvider.setLocationData = position;
-      socketProvider.emitLocation("send-alarm", data);
+      var a = dataSocketPosition.toJson();
+      socketProvider.emitLocation("send-alarm", dataSocketPosition);
       log('${position.latitude}, ${position.longitude}');
     });
     geoLocationProvider.setLocationSubscription = locationSubscription;

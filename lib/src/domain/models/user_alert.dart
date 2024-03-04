@@ -26,7 +26,7 @@ class UserAlert {
 
   factory UserAlert.fromJson(Map<String, dynamic> json) => UserAlert(
         userID: json["userID"],
-        avatar: "$HOST/${json["avatar"]}",
+        avatar: "$HOST${json["avatar"]}",
         names: json["names"],
         status: json["status"],
       );

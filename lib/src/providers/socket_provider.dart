@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:vivo_vivo_app/src/domain/models/send_alarm_data.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
-
 
 class SocketProvider with ChangeNotifier {
   IO.Socket? _socket;
@@ -39,8 +39,8 @@ class SocketProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void emitLocation(String event, [dynamic data]) {
-    _socket!.emit(event, data);
+  void emitLocation(String event, SendAlarmData data) {
+    _socket!.emit(event, data.toJson());
     notifyListeners();
   }
 
