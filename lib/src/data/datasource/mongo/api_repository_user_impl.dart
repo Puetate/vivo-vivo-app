@@ -1,6 +1,8 @@
 import 'dart:typed_data';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:vivo_vivo_app/src/domain/api/vivo_vivo_api.dart';
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
 import 'package:vivo_vivo_app/src/domain/models/person_disability.dart';
@@ -59,7 +61,8 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
     if (personDisability == null) {
       data = {
         'avatar': await MultipartFile.fromFile(person.avatar.path,
-            filename: person.avatar.name),
+            filename: person.avatar.name,
+            contentType: MediaType.parse(getContentType(person.avatar))),
         'user': userData,
         'person': person.toJson(),
         'personInfo': personInfo.toJson(),
@@ -77,5 +80,17 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
 
     var res = await Api.postWithFile("auth/register", data);
     return res;
+  }
+
+  String getContentType(XFile file) {
+    String contentType = file.path.endsWith('.png')
+        ? 'image/png'
+        : file.path.endsWith('.jpeg')
+            ? 'image/jpeg'
+            : file.path.endsWith('.jpg')
+                ? 'image/jpg'
+                : 'application/octet-stream'; // Tipo de contenido predeterminado
+
+    return contentType;
   }
 }
