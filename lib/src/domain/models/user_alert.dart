@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 UserAlert userAlertFromJson(String str) => UserAlert.fromJson(json.decode(str));
 
 String userAlertToJson(UserAlert data) => json.encode(data.toJson());
-String HOST = dotenv.env['HOST']!;
+String HOST = dotenv.env['PUBLIC_IMG_URL']!;
 
 class UserAlert {
   int userID;

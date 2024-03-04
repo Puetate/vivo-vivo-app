@@ -5,10 +5,10 @@ import 'package:vivo_vivo_app/src/domain/models/role.dart';
 
 String userAuthToJson(UserAuth data) => json.encode(data.toJson());
 UserAuth userAuthFromJson(String str) => UserAuth.fromJson(json.decode(str));
-UserAuth userAuthFromJsonPreferences(String str) => UserAuth.fromJsonPreferences(json.decode(str));
+UserAuth userAuthFromJsonPreferences(String str) =>
+    UserAuth.fromJsonPreferences(json.decode(str));
 
-String HOST = dotenv.env['HOST']!;
-
+String HOST = dotenv.env['PUBLIC_IMG_URL']!;
 
 class UserAuth {
   int userID;
@@ -36,7 +36,7 @@ class UserAuth {
         names: json["names"],
         email: json["email"],
         phone: json["phone"],
-        avatar: "$HOST/${json["avatar"]}",
+        avatar: "$HOST${json["avatar"]}",
         roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
       );
 

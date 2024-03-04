@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 
 UserPrefProvider userPrefProviderFromJson(String str) =>
@@ -8,8 +7,6 @@ UserPrefProvider userPrefProviderFromJson(String str) =>
 
 String userPrefProviderToJson(UserPrefProvider data) =>
     json.encode(data.toJson());
-
-String HOST = dotenv.env['HOST']!;
 
 class UserPrefProvider {
   UserAuth user;

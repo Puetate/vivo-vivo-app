@@ -206,7 +206,6 @@ class HomeController {
           familyMemberUserIDs: familyGroupsIds,
           userID: user.userID);
       geoLocationProvider.setLocationData = position;
-      var a = dataSocketPosition.toJson();
       socketProvider.emitLocation("send-alarm", dataSocketPosition);
       log('${position.latitude}, ${position.longitude}');
     });

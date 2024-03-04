@@ -11,7 +11,7 @@ FamilyGroupResponse familyGroupFromJson(String str) =>
 
 String familyGroupToJson(FamilyGroupResponse data) =>
     json.encode(data.toJson());
-String HOST = dotenv.env['HOST']!;
+String HOST = dotenv.env['PUBLIC_IMG_URL']!;
 
 class FamilyGroupResponse {
   int? userID;
