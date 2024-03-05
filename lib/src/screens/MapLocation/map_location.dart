@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -39,6 +38,8 @@ class _LocationMapState extends State<LocationMap> {
   BitmapDescriptor? imgSource;
   late BitmapDescriptor imgDestination;
   bool isSendLocation = false;
+  late final SocketProvider socketProvider;
+
   // late StreamSubscription<LC.LocationData> locationSubscription;
   // BitmapDescriptor imagenMarker;
 
@@ -49,6 +50,7 @@ class _LocationMapState extends State<LocationMap> {
   @override
   void initState() {
     super.initState();
+    socketProvider = context.read<SocketProvider>();
     mapLocationController = MapLocationController(context: context);
     isSendLocation = context.read<GeoLocationProvider>().isSendLocation;
     if (!isSendLocation) {
@@ -60,11 +62,11 @@ class _LocationMapState extends State<LocationMap> {
     _markers = <MarkerId, Marker>{};
     _markers.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getImage(user.avatar);
+      getImage(user.avatar).whenComplete(() => initSocket(user));
     });
   }
 
-  void getImage(String avatar) async {
+  Future<void> getImage(String avatar) async {
     imgSource = await getImagesMap(avatar);
     imgDestination = await getImagesMap(widget.user.avatar);
     setState(() {});
@@ -72,10 +74,11 @@ class _LocationMapState extends State<LocationMap> {
 
   @override
   void dispose() {
-    super.dispose();
     if (!isSendLocation) {
       mapLocationController.cancelSendLocation();
     }
+    socketProvider.offLocation(widget.user.userID, (_) => null);
+    super.dispose();
   }
 
   @override
@@ -88,7 +91,6 @@ class _LocationMapState extends State<LocationMap> {
 
     /* WidgetsBinding.instance.addPostFrameCallback((_) {
     }); */
-    initSocket(context, user);
 
     final Size size = AppLayout.getSize(context);
     return Scaffold(
@@ -231,14 +233,13 @@ class _LocationMapState extends State<LocationMap> {
   }
 
   void changeDestinationPosition(
-      Map latlng, BitmapDescriptor imgDestination) async {
-    log(latlng.toString());
+      Map latLng, BitmapDescriptor imgDestination) async {
     if (count <= 0) {
       final GoogleMapController controller = await _controllerMap.future;
       controller.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(latlng["lat"], latlng["lng"]),
+            target: LatLng(latLng["lat"], latLng["lng"]),
             zoom: 15,
           ),
         ),
@@ -254,8 +255,8 @@ class _LocationMapState extends State<LocationMap> {
       markerId: MarkerId("destination"),
       icon: imgDestination,
       position: LatLng(
-        latlng["lat"],
-        latlng["lng"],
+        latLng["lat"],
+        latLng["lng"],
       ),
     );
     if (mounted) {
@@ -265,11 +266,9 @@ class _LocationMapState extends State<LocationMap> {
     }
   }
 
-  void initSocket(BuildContext context, UserAuth user) async {
+  void initSocket(UserAuth user) async {
     try {
-      final socketProvider = context.read<SocketProvider>();
-      socketProvider.connect(user);
-
+      // socketProvider.connect(user);
       socketProvider.onLocation(
         widget.user.userID,
         (data) {

@@ -23,8 +23,8 @@ class SocketProvider with ChangeNotifier {
               .setTransports(['websocket'])
               // .enableAutoConnect()
               .enableReconnection()
-              .setQuery({'userId': user.userID})
-              .setExtraHeaders({'userId': user.userID}) // optional
+              .setQuery({'userID': user.userID})
+              .setExtraHeaders({'userID': user.userID}) // optional
               .build());
 
       _socket!.connect();
@@ -46,6 +46,10 @@ class SocketProvider with ChangeNotifier {
 
   void onLocation(int event, dynamic Function(dynamic) callback) {
     _socket!.on(event.toString(), callback);
+  }
+
+  void offLocation(int event, dynamic Function(dynamic) callback) {
+    _socket!.off(event.toString(), callback);
   }
 
   void onAlerts(String event, dynamic Function(dynamic) callback) {
