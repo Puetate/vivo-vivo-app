@@ -19,7 +19,7 @@ Future main() async {
   await dotenv.load();
   DioSingleton.getInstance();
   await SharedPrefs().init();
- 
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),

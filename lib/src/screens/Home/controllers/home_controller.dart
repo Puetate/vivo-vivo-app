@@ -174,7 +174,7 @@ class HomeController {
       lng = geoLocationProvider.getCurrentPosition!.longitude!;
       lat = geoLocationProvider.getCurrentPosition!.latitude!;
       int idAlarm = await postAlarmBD(lat, lng, user);
-      if (idAlarm.isNegative) return false;
+      if (idAlarm.isNegative || idAlarm == 0) return false;
       SharedPrefs().idAlarm = idAlarm;
       await getFamilyGroup(isNewAlarm, user);
       SharedPrefs().state = DANGER;
@@ -238,7 +238,7 @@ class HomeController {
     var res =
         await familyGroupService.getFamilyMembersByUser(user.userID.toString());
     if (res == null || res.error) return List<int>.empty();
-    return res.data.cast<int>();
+    return res.data["familyMemberUserIDs"].cast<int>();
   }
 
   Future<void> getFamilyGroup(bool isNewAlert, UserAuth user) async {
@@ -247,7 +247,8 @@ class HomeController {
     List<int> familyGroupIDs = await getFamilyGroupByUserMember(user);
     List<int> policesIDs = await getPolicesByUserMember(user);
     familyGroupIDs.addAll(policesIDs);
-    SharedPrefs().familyGroupIds = jsonEncode(familyGroupIDs);
+    SharedPrefs().familyGroupIds =
+        familyGroupIDs.isNotEmpty ? jsonEncode(familyGroupIDs) : "";
   }
 
   Future<void> openPermissionLocations() async {
