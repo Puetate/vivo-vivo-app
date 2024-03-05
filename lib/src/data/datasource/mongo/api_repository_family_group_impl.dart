@@ -10,6 +10,12 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
   }
 
   @override
+  Future getPolicesByUserMember(String userID) async {
+    var res = await Api.httpGet("police-temporal-group/police-ids/$userID");
+    return res;
+  }
+
+  @override
   Future getFamilyGroupByUserId(int userId) async {
     var res = await Api.httpGet("family-group/family-member/$userId");
     return res;

@@ -7,4 +7,5 @@ abstract class ApiRepositoryFamilyMembersInterface {
   Future getAllFamilyGroupByUserId(String userId);
   Future getUserByDni(String dni);
   Future postFamilyGroup(FamilyGroupRequest familyGroupRequest);
+  Future getPolicesByUserMember(String userID);
 }

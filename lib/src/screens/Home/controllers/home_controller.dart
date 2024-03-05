@@ -127,6 +127,7 @@ class HomeController {
         .getFamilyGroupByUserInDanger(user.userID.toString());
     if (res == null || res.error) return;
     int count = res.data["count"];
+    log("$count count!");
     onStateGetAlerts(null, count);
   }
 
@@ -185,9 +186,8 @@ class HomeController {
 
   void getLivePosition(UserAuth user) {
     var location = geoLocationProvider.getLocation;
-    location.enableBackgroundMode(enable: true);
-    location.changeSettings(
-        accuracy: LocationAccuracy.high, distanceFilter: 0, interval: 400);
+    // location.enableBackgroundMode(enable: true);
+    location.changeSettings(accuracy: LocationAccuracy.high, interval: 500);
     location.changeNotificationOptions(
         channelName: "channel",
         subtitle: "Se esta enviando tu ubicación a tu núcleo de confianza.",
@@ -227,16 +227,27 @@ class HomeController {
     return alarm.alarmID!;
   }
 
-  Future<void> getFamilyGroup(bool isNewAlert, UserAuth user) async {
-    if (isNewAlert) {
-      var res = await familyGroupService
-          .getFamilyMembersByUser(user.userID.toString());
-      if (res == null || res.error) return;
+  Future<List<int>> getPolicesByUserMember(UserAuth user) async {
+    var res =
+        await familyGroupService.getPolicesByUserMember(user.userID.toString());
+    if (res == null || res.error) return List<int>.empty();
+    return res.data["policeIDs"].cast<int>();
+  }
 
-      List<int> familyGroupIds = [];
-      familyGroupIds = res.data.cast<int>();
-      SharedPrefs().familyGroupIds = jsonEncode(familyGroupIds);
-    }
+  Future<List<int>> getFamilyGroupByUserMember(UserAuth user) async {
+    var res =
+        await familyGroupService.getFamilyMembersByUser(user.userID.toString());
+    if (res == null || res.error) return List<int>.empty();
+    return res.data.cast<int>();
+  }
+
+  Future<void> getFamilyGroup(bool isNewAlert, UserAuth user) async {
+    if (!isNewAlert) return;
+
+    List<int> familyGroupIDs = await getFamilyGroupByUserMember(user);
+    List<int> policesIDs = await getPolicesByUserMember(user);
+    familyGroupIDs.addAll(policesIDs);
+    SharedPrefs().familyGroupIds = jsonEncode(familyGroupIDs);
   }
 
   Future<void> openPermissionLocations() async {
