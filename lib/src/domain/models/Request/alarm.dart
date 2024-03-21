@@ -55,6 +55,7 @@ class Alarm {
 class AlarmDetail {
   int? alarmID;
   String alarmStatus;
+  String alarmType;
   double latitude;
   double longitude;
   int? userID;
@@ -62,6 +63,7 @@ class AlarmDetail {
   AlarmDetail(
       {this.alarmID,
       required this.alarmStatus,
+      required this.alarmType,
       required this.latitude,
       required this.longitude,
       this.userID});
@@ -69,6 +71,7 @@ class AlarmDetail {
   factory AlarmDetail.fromJson(Map<String, dynamic> json) => AlarmDetail(
         alarmID: json["alarm"],
         alarmStatus: json["alarmStatus"],
+        alarmType: json["alarmType"],
         latitude: json["latitude"],
         longitude: json["longitude"],
       );
@@ -76,6 +79,7 @@ class AlarmDetail {
   Map<String, dynamic> toJson() => {
         "alarmID": alarmID,
         "alarmStatus": alarmStatus,
+        "alarmType": alarmType,
         "latitude": latitude,
         "longitude": longitude,
         "userID": userID

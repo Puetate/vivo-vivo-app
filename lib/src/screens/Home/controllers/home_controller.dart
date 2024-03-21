@@ -26,6 +26,7 @@ import 'package:vivo_vivo_app/src/screens/Home/components/permission_dialog.dart
 import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
 String EVENT = "update-user-status";
+String EVENT_REQUEST_POSITION = "request-police-position";
 String DANGER = "DANGER";
 String MOBILE = "MOBILE";
 String OK = "OK";
@@ -113,9 +114,8 @@ class HomeController {
   }
 
   void onAlerts(Function startSomething) {
-    UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
-
-    socketProvider.onAlerts("$EVENT-${user.userID}", (_) {
+    // UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
+    socketProvider.onAlerts(EVENT, (_) {
       startSomething();
     });
   }
@@ -169,6 +169,7 @@ class HomeController {
       openPermissionLocations();
       return false;
     }
+    socketProvider.requestPolicePosition(EVENT_REQUEST_POSITION);
     if (isNewAlarm) {
       await geoLocationProvider.getCurrentLocation();
       lng = geoLocationProvider.getCurrentPosition!.longitude!;
@@ -186,7 +187,7 @@ class HomeController {
 
   void getLivePosition(UserAuth user) {
     var location = geoLocationProvider.getLocation;
-    // location.enableBackgroundMode(enable: true);
+    location.enableBackgroundMode(enable: true);
     location.changeSettings(accuracy: LocationAccuracy.high, interval: 500);
     location.changeNotificationOptions(
         channelName: "channel",
@@ -218,8 +219,12 @@ class HomeController {
         userID: user.userID,
         alarmType: MOBILE,
       ),
-      alarmDetail:
-          AlarmDetail(alarmStatus: DANGER, latitude: lat, longitude: lng),
+      alarmDetail: AlarmDetail(
+        alarmStatus: DANGER,
+        alarmType: MOBILE,
+        latitude: lat,
+        longitude: lng,
+      ),
     );
     var res = await alarmService.postAlarm(alarmRequest);
     if (res == null || res.error) return -0;
@@ -270,6 +275,7 @@ class HomeController {
     AlarmDetail alarmDetail = AlarmDetail(
       alarmID: SharedPrefs().idAlarm,
       alarmStatus: OK,
+      alarmType: MOBILE,
       latitude: geoLocationProvider.locationData.latitude!,
       longitude: geoLocationProvider.locationData.longitude!,
       userID: userId,
