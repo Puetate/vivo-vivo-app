@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,6 +17,7 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_alarm_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/notification_family_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/domain/models/send_alarm_data.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
@@ -52,6 +55,42 @@ class HomeController {
     alarmService = ApiRepositoryAlarmImpl();
     userService = ApiRepositoryUserImpl();
     socketProvider = context.read<SocketProvider>();
+  }
+  Future<bool> checkConnectivity() async {
+    bool connectivityResult =
+        await Connectivity().checkConnectivity().then((value) {
+      if (value.contains(ConnectivityResult.wifi) ||
+          value.contains(ConnectivityResult.mobile)) {
+        return true;
+      }
+      return false;
+    });
+    if (!connectivityResult) return false;
+    final result = await InternetAddress.lookup('www.google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  void getIncidentType() async {
+    if ((!await checkConnectivity())) return;
+
+    int storageCountIncidentType = SharedPrefs().countIncidentType;
+    var response = await userService.getCountIncidentType();
+    int requestCountIncidentType = response.data as int;
+    if (!(storageCountIncidentType <= 0) ||
+        requestCountIncidentType == storageCountIncidentType) return;
+    var res = await userService.getIncidentType();
+    if (res.data == null || res.error as bool) return;
+    List<IncidentType> incidentTypes = (res.data as List)
+        .map(
+          (p) => IncidentType.fromJson(p),
+        )
+        .toList();
+    int countIncidentsTypes = incidentTypes.length;
+    SharedPrefs().incidentType = jsonEncode(res.data);
+    SharedPrefs().countIncidentType = countIncidentsTypes;
   }
 
   Future<void> openPreferences(BuildContext context) async {
@@ -135,7 +174,7 @@ class HomeController {
     String state = SharedPrefs().state;
     if (state == DANGER) {
       alarmState.setIsProcessSendLocation(true);
-      initSendAlarm(false, true, user);
+      initSendAlarm(false, true, user, 0);
     } else {
       var alarmProvider = context.read<AlarmStateProvider>();
       alarmProvider.setIsSendLocation(false);
@@ -143,8 +182,8 @@ class HomeController {
     }
   }
 
-  void initSendAlarm(bool isNewAlarm, bool hasPermission, UserAuth user) async {
-    bool isSendPosition = await startAlarm(isNewAlarm, hasPermission, user);
+  void initSendAlarm(bool isNewAlarm, bool hasPermission, UserAuth user, int incidentTypeID) async {
+    bool isSendPosition = await startAlarm(isNewAlarm, hasPermission, user, incidentTypeID);
     if (!isSendPosition) {
       alarmState.setIsProcessSendLocation(false);
       return;
@@ -162,7 +201,7 @@ class HomeController {
   }
 
   Future<bool> startAlarm(
-      bool isNewAlarm, bool hasPermission, UserAuth user) async {
+      bool isNewAlarm, bool hasPermission, UserAuth user, int incidentTypeID) async {
     double lng = 0;
     double lat = 0;
     if (!hasPermission) {
@@ -174,7 +213,7 @@ class HomeController {
       await geoLocationProvider.getCurrentLocation();
       lng = geoLocationProvider.getCurrentPosition!.longitude!;
       lat = geoLocationProvider.getCurrentPosition!.latitude!;
-      int idAlarm = await postAlarmBD(lat, lng, user);
+      int idAlarm = await postAlarmBD(lat, lng, user, incidentTypeID);
       if (idAlarm.isNegative || idAlarm == 0) return false;
       SharedPrefs().idAlarm = idAlarm;
       await getFamilyGroup(isNewAlarm, user);
@@ -213,11 +252,12 @@ class HomeController {
     geoLocationProvider.setLocationSubscription = locationSubscription;
   }
 
-  Future<int> postAlarmBD(double lat, double lng, UserAuth user) async {
+  Future<int> postAlarmBD(double lat, double lng, UserAuth user, int incidentTypeID) async {
     AlarmRequest alarmRequest = AlarmRequest(
       alarm: Alarm(
         userID: user.userID,
         alarmType: MOBILE,
+        incidentTypeID: incidentTypeID,
       ),
       alarmDetail: AlarmDetail(
         alarmStatus: DANGER,

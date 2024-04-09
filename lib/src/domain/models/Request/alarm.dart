@@ -36,19 +36,21 @@ class Alarm {
   int? alarmTypeID;
   int userID;
   String? alarmType;
+  int? incidentTypeID;
 
-  Alarm({required this.userID, this.alarmType, this.alarmID, this.alarmTypeID});
+  Alarm({required this.userID, this.alarmType, this.alarmID, this.alarmTypeID, this.incidentTypeID});
 
   factory Alarm.fromJson(Map<String, dynamic> json) => Alarm(
         alarmID: json["alarmID"],
         alarmTypeID: json["alarmTypeID"],
         userID: json["userID"],
-        alarmType: json["alarmType"],
+        alarmType: json["alarmType"], 
       );
 
   Map<String, dynamic> toJson() => {
         "userID": userID,
         "alarmType": alarmType,
+        "incidentTypeID": incidentTypeID,
       };
 }
 

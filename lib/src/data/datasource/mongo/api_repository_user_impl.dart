@@ -93,4 +93,16 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
 
     return contentType;
   }
+
+  @override
+  Future getIncidentType() async {
+    var res = await Api.httpGet("incident-type");
+    return res;
+  }
+  
+  @override
+  Future getCountIncidentType() async {
+    var res = await Api.httpGet("incident-type/count");
+    return res;
+  }
 }

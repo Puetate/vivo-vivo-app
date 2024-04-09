@@ -43,4 +43,10 @@ class Styles {
   static TextStyle textButtonTrackLocation = TextStyle(color: redText);
   static TextStyle textState =
       TextStyle(color: redText, fontWeight: FontWeight.bold);
+
+  static RoundedRectangleBorder rounded([double radius = 20]) =>
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+            radius), // Establece el radio de borde deseado
+      );
 }

@@ -1,13 +1,16 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefs {
   static SharedPreferences? _sharedPrefs;
-  // ignore: constant_identifier_names
   static const KEY_USER = "user";
   static const KEY_TOKEN = "token";
   static const KEY_STATE = "state";
   static const KEY_ID_ALARM = "idAlarm";
   static const KEY_FAMILY_GROUP_IDS = "familyGroupIds";
+  static const KEY_INCIDENT_TYPE = "incidentType";
+  static const KEY_COUNT_INCIDENT_TYPE = "countIncidentType";
 
   factory SharedPrefs() => SharedPrefs._internal();
 
@@ -23,6 +26,8 @@ class SharedPrefs {
   int get idAlarm => _sharedPrefs?.getInt(KEY_ID_ALARM) ?? -0;
   String get familyGroupIds =>
       _sharedPrefs?.getString(KEY_FAMILY_GROUP_IDS) ?? "";
+  String get incidentType => _sharedPrefs?.getString(KEY_INCIDENT_TYPE) ?? "";
+  int get countIncidentType => _sharedPrefs?.getInt(KEY_COUNT_INCIDENT_TYPE) ?? -0;
 
   set user(String value) {
     _sharedPrefs?.setString(KEY_USER, value);
@@ -42,6 +47,14 @@ class SharedPrefs {
 
   set familyGroupIds(String value) {
     _sharedPrefs?.setString(KEY_FAMILY_GROUP_IDS, value);
+  }
+
+  set incidentType(String value) {
+    _sharedPrefs?.setString(KEY_INCIDENT_TYPE, value);
+  }
+
+  set countIncidentType(int value) {
+    _sharedPrefs?.setInt(KEY_COUNT_INCIDENT_TYPE, value);
   }
 
   void logout() {

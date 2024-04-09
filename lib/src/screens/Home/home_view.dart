@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:badges/badges.dart' as BG;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +11,17 @@ import 'package:provider/provider.dart';
 import 'package:simple_ripple_animation/simple_ripple_animation.dart';
 import 'package:vibration/vibration.dart';
 import 'package:location/location.dart' as LC;
+import 'package:vivo_vivo_app/src/commons/commons.dart';
 import 'package:vivo_vivo_app/src/commons/permissions.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_notification_impl.dart';
+import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Alerts/alerts.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/drawer.dart';
+import 'package:vivo_vivo_app/src/screens/Home/components/card_information.dart';
 import 'package:vivo_vivo_app/src/screens/Home/controllers/home_controller.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
@@ -52,6 +56,8 @@ class _HomeViewState extends State<HomeView> {
   bool isSendLocation = false;
   int countSocket = 0;
   int count = 0;
+  List<IncidentType> _incidentTypes = [];
+  int _selectedIncidentType = 0;
 
   @override
   void initState() {
@@ -68,7 +74,21 @@ class _HomeViewState extends State<HomeView> {
     homeController.getUsersAlerts();
     initPlatform(context);
     onAlerts();
+    homeController.getIncidentType();
     // homeController.openPermissionLocations();
+    getIncidentTypes();
+  }
+
+  void getIncidentTypes() {
+    String resString = SharedPrefs().incidentType;
+    List<IncidentType> incidentTypes = (jsonDecode(resString) as List)
+        .map(
+          (p) => IncidentType.fromJson(p),
+        )
+        .toList();
+    setState(() {
+      _incidentTypes = incidentTypes;
+    });
   }
 
   @override
@@ -85,8 +105,8 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
         key: _scaffoldKey,
         body: Container(
-          height: double.infinity,
-          width: double.infinity,
+          height: size.height,
+          width: size.width,
           decoration: const BoxDecoration(color: Color.fromRGBO(56, 56, 76, 1)),
           child: Stack(
             children: [
@@ -131,145 +151,195 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ]),
               ),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(alarmProvider.getTextButton,
-                        style: Styles.textStyleBody),
-                    if (!alarmProvider.getIsSendLocation) ...[
-                      (!alarmProvider.getIsProcessSendLocation)
-                          ? RawGestureDetector(
-                              gestures: <Type, GestureRecognizerFactory>{
-                                LongPressGestureRecognizer:
-                                    GestureRecognizerFactoryWithHandlers<
-                                        LongPressGestureRecognizer>(
-                                  () => LongPressGestureRecognizer(
-                                    debugOwner: this,
-                                    duration: const Duration(seconds: 2),
+              SizedBox(
+                height: size.height * 0.80,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(alarmProvider.getTextButton,
+                          style: Styles.textStyleBody),
+                      if (!alarmProvider.getIsSendLocation) ...[
+                        (!alarmProvider.getIsProcessSendLocation)
+                            ? RawGestureDetector(
+                                gestures: <Type, GestureRecognizerFactory>{
+                                  LongPressGestureRecognizer:
+                                      GestureRecognizerFactoryWithHandlers<
+                                          LongPressGestureRecognizer>(
+                                    () => LongPressGestureRecognizer(
+                                      debugOwner: this,
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                    (LongPressGestureRecognizer instance) {
+                                      instance.onLongPress = () {
+                                        Vibration.vibrate(duration: 70);
+                                        alarmProvider
+                                            .setIsProcessSendLocation(true);
+                                        sendLocation(true);
+                                      };
+                                    },
                                   ),
-                                  (LongPressGestureRecognizer instance) {
-                                    instance.onLongPress = () {
-                                      Vibration.vibrate(duration: 50);
-                                      alarmProvider
-                                          .setIsProcessSendLocation(true);
-                                      sendLocation(true);
-                                    };
-                                  },
+                                  TapGestureRecognizer:
+                                      GestureRecognizerFactoryWithHandlers<
+                                          TapGestureRecognizer>(
+                                    () => TapGestureRecognizer(),
+                                    (TapGestureRecognizer instance) {
+                                      instance.onTapDown = (details) {
+                                        Vibration.vibrate(
+                                            duration:
+                                                25); // Vibración al iniciar el tap
+                                      };
+                                    },
+                                  ),
+                                },
+                                child: Image(
+                                  image:
+                                      const AssetImage("assets/image/sos.png"),
+                                  height: (size.width * 0.6),
                                 ),
-                              },
-                              child: Image(
-                                image: const AssetImage("assets/image/sos.png"),
-                                height: (size.width * 0.6),
+                              )
+                            : RippleAnimation(
+                                key: _key,
+                                repeat: true,
+                                color: Styles.redText,
+                                minRadius: 140,
+                                ripplesCount: 8,
+                                child: Image(
+                                  image: const AssetImage(
+                                      "assets/image/alert.gif"),
+                                  height: (size.width * 0.6),
+                                ),
                               ),
-                            )
-                          : RippleAnimation(
-                              key: _key,
-                              repeat: true,
-                              color: Styles.redText,
-                              minRadius: 140,
-                              ripplesCount: 8,
-                              child: Image(
-                                image:
-                                    const AssetImage("assets/image/alert.gif"),
-                                height: (size.width * 0.6),
-                              ),
-                            ),
-                      const Text(
-                        "Presione durante 3 segundos para enviar alerta",
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ] else ...[
-                      Center(
-                        child: (!alarmProvider.getIsProcessFinalizeLocation)
-                            ? Column(
-                                children: [
-                                  const Gap(30),
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      ClipOval(
-                                        child: Material(
-                                          elevation: 20,
-                                          child: Container(
-                                            color: Colors.grey[350],
-                                            child: SizedBox(
-                                              width: size.width * 0.57,
-                                              height: size.width * 0.57,
+                        const Text(
+                          "Presione durante 3 segundos para enviar alerta",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ] else ...[
+                        Center(
+                          child: (!alarmProvider.getIsProcessFinalizeLocation)
+                              ? Column(
+                                  children: [
+                                    const Gap(30),
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        ClipOval(
+                                          child: Material(
+                                            elevation: 20,
+                                            child: Container(
+                                              color: Colors.grey[350],
+                                              child: SizedBox(
+                                                width: size.width * 0.57,
+                                                height: size.width * 0.57,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      ClipOval(
-                                        child: Material(
-                                            color: Styles.green, // Button color
-                                            child: RawGestureDetector(
-                                              gestures: <Type,
-                                                  GestureRecognizerFactory>{
-                                                LongPressGestureRecognizer:
-                                                    GestureRecognizerFactoryWithHandlers<
-                                                        LongPressGestureRecognizer>(
-                                                  () =>
-                                                      LongPressGestureRecognizer(
-                                                    debugOwner: this,
-                                                    duration: const Duration(
-                                                        seconds: 2),
-                                                  ),
-                                                  (LongPressGestureRecognizer
-                                                      instance) {
-                                                    instance.onLongPress = () {
-                                                      Vibration.vibrate(
-                                                          duration: 50);
-                                                      alarmProvider
-                                                          .setIsProcessFinalizeLocation(
-                                                              true);
-                                                      (cancelSendLocation());
-                                                    };
-                                                  },
-                                                ),
-                                              },
-                                              child: SizedBox(
-                                                width: size.width * 0.55,
-                                                height: size.width * 0.55,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.check_rounded,
-                                                      size: (size.width * 0.2),
+                                        ClipOval(
+                                          child: Material(
+                                              color:
+                                                  Styles.green, // Button color
+                                              child: RawGestureDetector(
+                                                gestures: <Type,
+                                                    GestureRecognizerFactory>{
+                                                  LongPressGestureRecognizer:
+                                                      GestureRecognizerFactoryWithHandlers<
+                                                          LongPressGestureRecognizer>(
+                                                    () =>
+                                                        LongPressGestureRecognizer(
+                                                      debugOwner: this,
+                                                      duration: const Duration(
+                                                          seconds: 2),
                                                     ),
-                                                    Text(
-                                                      "¡Ya Estoy Seguro!",
-                                                      style: Styles
-                                                          .textStyleTitle
-                                                          .copyWith(
-                                                              fontSize: 17),
-                                                    )
-                                                  ],
+                                                    (LongPressGestureRecognizer
+                                                        instance) {
+                                                      instance.onLongPress =
+                                                          () {
+                                                        Vibration.vibrate(
+                                                            duration: 70);
+                                                        alarmProvider
+                                                            .setIsProcessFinalizeLocation(
+                                                                true);
+                                                        (cancelSendLocation());
+                                                      };
+                                                    },
+                                                  ),
+                                                  TapGestureRecognizer:
+                                                      GestureRecognizerFactoryWithHandlers<
+                                                          TapGestureRecognizer>(
+                                                    () =>
+                                                        TapGestureRecognizer(),
+                                                    (TapGestureRecognizer
+                                                        instance) {
+                                                      instance.onTapDown =
+                                                          (details) {
+                                                        Vibration.vibrate(
+                                                            duration:
+                                                                25); // Vibración al iniciar el tap
+                                                      };
+                                                    },
+                                                  ),
+                                                },
+                                                child: SizedBox(
+                                                  width: size.width * 0.55,
+                                                  height: size.width * 0.55,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.check_rounded,
+                                                        size:
+                                                            (size.width * 0.2),
+                                                      ),
+                                                      Text(
+                                                        "¡Ya Estoy Seguro!",
+                                                        style: Styles
+                                                            .textStyleTitle
+                                                            .copyWith(
+                                                                fontSize: 17),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            )),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              )
-                            : Lottie.asset(
-                                'assets/lottie/chargeIsSecurity.json',
-                                width: size.width * 0.8,
-                                height: size.height * 0.35,
-                              ),
-                      ),
-                      const Text(
-                        "Presione durante 3 segundos para terminar alerta",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ]
-                  ],
+                                              )),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                )
+                              : Lottie.asset(
+                                  'assets/lottie/chargeIsSecurity.json',
+                                  width: size.width * 0.8,
+                                  height: size.height * 0.35,
+                                ),
+                        ),
+                        const Text(
+                          "Presione durante 3 segundos para terminar alerta",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ]
+                    ],
+                  ),
                 ),
-              )
+              ),
+              Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SizedBox(
+                    height: size.height * 0.26,
+                    child: CardInformation(
+                        optionsIncidents: _incidentTypes,
+                        onTap: (incidentTypeID) {
+                          setState(() {
+                            _selectedIncidentType = incidentTypeID;
+                          });
+                        },
+                        size: 400),
+                  ))
             ],
           ),
         ),
@@ -300,7 +370,11 @@ class _HomeViewState extends State<HomeView> {
     if (mounted) {
       hasPermission = await Permissions.checkPermission(context);
     }
-    homeController.initSendAlarm(isNewAlarm, hasPermission, user);
+    if (_selectedIncidentType == 0) {
+      _selectedIncidentType = _incidentTypes[0].incidentTypeId;
+    }
+    homeController.initSendAlarm(
+        isNewAlarm, hasPermission, user, _selectedIncidentType);
   }
 
   void cancelSendLocation() async {

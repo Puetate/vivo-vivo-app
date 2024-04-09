@@ -35,7 +35,7 @@ class DioSingleton {
         final String message =
             error.response?.data['error'] ?? notConnectMessage;
 
-        ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
+        ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!) 
             .showSnackBar(MySnackBars.failureSnackBar(message,
                 "Error!")); // Implementa tu propia lógica para mostrar mensajes de error
         handler.next(error);

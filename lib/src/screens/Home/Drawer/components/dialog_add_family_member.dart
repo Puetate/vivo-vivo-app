@@ -6,7 +6,6 @@ import 'package:vivo_vivo_app/src/components/text_input.dart' as TX;
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_family_group_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/family_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/family_group_request.dart';
-import 'package:vivo_vivo_app/src/domain/models/user.dart';
 import 'package:vivo_vivo_app/src/providers/user_provider.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/card_person.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
