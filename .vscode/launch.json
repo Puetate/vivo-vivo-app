@@ -6,18 +6,18 @@
     "configurations": [
         
         {
-            "name": "vivo-vivo-app",
+            "name": "vivo_vivo_app",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "vivo-vivo-app (profile mode)",
+            "name": "vivo_vivo_app (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "vivo-vivo-app (release mode)",
+            "name": "vivo_vivo_app (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
