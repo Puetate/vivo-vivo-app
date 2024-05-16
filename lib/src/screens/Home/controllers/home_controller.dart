@@ -74,13 +74,15 @@ class HomeController {
   }
 
   void getIncidentType() async {
-    if ((!await checkConnectivity())) return;
+    bool hasConnect = await checkConnectivity();
+    if (!hasConnect) return;
 
     int storageCountIncidentType = SharedPrefs().countIncidentType;
     var response = await userService.getCountIncidentType();
     int requestCountIncidentType = response.data as int;
     if (!(storageCountIncidentType <= 0) ||
         requestCountIncidentType == storageCountIncidentType) return;
+
     var res = await userService.getIncidentType();
     if (res.data == null || res.error as bool) return;
     List<IncidentType> incidentTypes = (res.data as List)
@@ -160,8 +162,9 @@ class HomeController {
   }
 
   void getUsersAlerts() async {
+    bool hasConnect = await checkConnectivity();
+    if (!hasConnect) return;
     UserAuth user = context.read<UserProvider>().getUserPrefProvider!.getUser;
-
     var res = await familyGroupService
         .getFamilyGroupByUserInDanger(user.userID.toString());
     if (res == null || res.error) return;
@@ -182,8 +185,10 @@ class HomeController {
     }
   }
 
-  void initSendAlarm(bool isNewAlarm, bool hasPermission, UserAuth user, int incidentTypeID) async {
-    bool isSendPosition = await startAlarm(isNewAlarm, hasPermission, user, incidentTypeID);
+  void initSendAlarm(bool isNewAlarm, bool hasPermission, UserAuth user,
+      int incidentTypeID) async {
+    bool isSendPosition =
+        await startAlarm(isNewAlarm, hasPermission, user, incidentTypeID);
     if (!isSendPosition) {
       alarmState.setIsProcessSendLocation(false);
       return;
@@ -200,8 +205,8 @@ class HomeController {
         "Tu alarma ha sido enviada con éxito.", "¡Excelentes noticias!"));
   }
 
-  Future<bool> startAlarm(
-      bool isNewAlarm, bool hasPermission, UserAuth user, int incidentTypeID) async {
+  Future<bool> startAlarm(bool isNewAlarm, bool hasPermission, UserAuth user,
+      int incidentTypeID) async {
     double lng = 0;
     double lat = 0;
     if (!hasPermission) {
@@ -252,7 +257,8 @@ class HomeController {
     geoLocationProvider.setLocationSubscription = locationSubscription;
   }
 
-  Future<int> postAlarmBD(double lat, double lng, UserAuth user, int incidentTypeID) async {
+  Future<int> postAlarmBD(
+      double lat, double lng, UserAuth user, int incidentTypeID) async {
     AlarmRequest alarmRequest = AlarmRequest(
       alarm: Alarm(
         userID: user.userID,
