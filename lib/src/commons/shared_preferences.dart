@@ -10,6 +10,7 @@ class SharedPrefs {
   static const KEY_ID_ALARM = "idAlarm";
   static const KEY_FAMILY_GROUP_IDS = "familyGroupIds";
   static const KEY_INCIDENT_TYPE = "incidentType";
+  static const KEY_INCIDENT_GROUP = "incidentGroup";
   static const KEY_COUNT_INCIDENT_TYPE = "countIncidentType";
 
   factory SharedPrefs() => SharedPrefs._internal();
@@ -27,7 +28,9 @@ class SharedPrefs {
   String get familyGroupIds =>
       _sharedPrefs?.getString(KEY_FAMILY_GROUP_IDS) ?? "";
   String get incidentType => _sharedPrefs?.getString(KEY_INCIDENT_TYPE) ?? "";
-  int get countIncidentType => _sharedPrefs?.getInt(KEY_COUNT_INCIDENT_TYPE) ?? -0;
+  String get incidentGroup => _sharedPrefs?.getString(KEY_INCIDENT_GROUP) ?? "";
+  int get countIncidentType =>
+      _sharedPrefs?.getInt(KEY_COUNT_INCIDENT_TYPE) ?? -0;
 
   set user(String value) {
     _sharedPrefs?.setString(KEY_USER, value);
@@ -51,6 +54,10 @@ class SharedPrefs {
 
   set incidentType(String value) {
     _sharedPrefs?.setString(KEY_INCIDENT_TYPE, value);
+  }
+
+  set incidentGroup(String value) {
+    _sharedPrefs?.setString(KEY_INCIDENT_GROUP, value);
   }
 
   set countIncidentType(int value) {

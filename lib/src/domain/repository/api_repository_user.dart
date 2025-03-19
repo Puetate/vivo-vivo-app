@@ -14,5 +14,6 @@ abstract class ApiRepositoryUserInterface {
   Future<bool> putStateByUser(String userId, String state);
   Future<Uint8List> getImageNetwork(String imgUrl);
   Future getIncidentType();
+  Future getIncidentGroup();
   Future getCountIncidentType();
 }

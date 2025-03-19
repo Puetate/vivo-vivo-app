@@ -3,6 +3,7 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_family_gr
 import 'package:vivo_vivo_app/src/domain/models/family_group.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/card_person.dart';
 import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/dialog_add_family_member.dart';
+import 'package:vivo_vivo_app/src/screens/Home/Drawer/components/dialog_delete_family_member.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 
 class FamilyGroup extends StatefulWidget {
@@ -37,7 +38,6 @@ class _FamilyGroupState extends State<FamilyGroup> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _familyGroupFuture = getAllFamilyGroupByUserId(
         widget.userId); // Inicializa el Future en initState
@@ -75,6 +75,18 @@ class _FamilyGroupState extends State<FamilyGroup> {
                           final user = snapshot.data![index];
                           return CardPerson(
                             user: user,
+                            onDeleteFamilyMember: () {
+                              DeleteFamilyMember formFamilyMember =
+                                  DeleteFamilyMember();
+                              formFamilyMember
+                                  .dialogConfirmDeleteFamilyMember(
+                                      context, reloadData, user)
+                                  .whenComplete(() => (setState(() {
+                                        _familyGroupFuture =
+                                            getAllFamilyGroupByUserId(widget
+                                                .userId); // Actualiza el Future después de cerrar el diálogo
+                                      })));
+                            },
                           );
                         },
                       )

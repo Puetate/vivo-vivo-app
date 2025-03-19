@@ -52,6 +52,10 @@ class CardAlert extends StatelessWidget {
                         children: [
                           Text(userAlert.names),
                           Text(
+                            "Teléfono: ${userAlert.phone}",
+                            style: Styles.textLabel,
+                          ),
+                          Text(
                             "Estado: $state",
                             style: Styles.textState.copyWith(color: colorState),
                           ),

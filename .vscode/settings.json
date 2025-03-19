@@ -1,6 +1,7 @@
 {
-    "cSpell.words": [
-        "geolocalization",
-        "Sesion"
-    ]
+  "cSpell.words": [
+    "geolocalization",
+    "Sesion"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.16.9"
 }

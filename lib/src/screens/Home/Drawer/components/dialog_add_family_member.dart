@@ -16,6 +16,7 @@ import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 class FormFamilyMember {
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
+  bool loadingPost = false;
   FamilyGroupResponse? userFamilyMember;
   String buttonTextBuscar = "Buscar";
   ApiRepositoryFamilyGroupImpl familyGroupServices =
@@ -32,7 +33,6 @@ class FormFamilyMember {
         return StatefulBuilder(
           builder: (context, setState) {
             String buttonTextAceptar = "Añadir";
-            // var _loading = false;
             return AlertDialog(
               insetPadding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
@@ -82,7 +82,8 @@ class FormFamilyMember {
                     ),
                   ),
                   const Gap(10),
-                  if (userFamilyMember != null) CardPerson(user: userFamilyMember!),
+                  if (userFamilyMember != null)
+                    CardPerson(user: userFamilyMember!),
                   if (loading && (userFamilyMember == null))
                     const CircularProgressIndicator.adaptive()
                 ],
@@ -101,13 +102,30 @@ class FormFamilyMember {
                           child: const Text("Cancelar"),
                         ),
                         ElevatedButton(
-                          onPressed: () async {
-                            handleSubmit(context, reloadFunction);
-                          },
+                          onPressed: loadingPost
+                              ? null
+                              : () async {
+                                  handleSubmit(
+                                      context, reloadFunction, setState);
+                                },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(buttonTextAceptar),
+                              loadingPost
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: SizedBox(
+                                        height: 15,
+                                        width: 15,
+                                        child:
+                                            CircularProgressIndicator.adaptive(
+                                          backgroundColor: Styles.white,
+                                          strokeWidth: 2.5,
+                                        ),
+                                      ),
+                                    )
+                                  : Text(buttonTextAceptar),
                             ],
                           ),
                         ),
@@ -130,22 +148,30 @@ class FormFamilyMember {
     return user;
   }
 
-  Future<void> handleSubmit(BuildContext context, Function reload) async {
+  Future<void> handleSubmit(
+      BuildContext context, Function reload, StateSetter setState) async {
     String id = context
         .read<UserProvider>()
         .getUserPrefProvider!
         .getUser
         .userID
         .toString();
+    setState(() {
+      loadingPost = true;
+    });
     FamilyGroupRequest familyGroupRequest = FamilyGroupRequest(
         userID: int.parse(id), userFamilyMemberID: userFamilyMember!.userID!);
     var res = await familyGroupServices.postFamilyGroup(familyGroupRequest);
+    if (!context.mounted) return;
     if (res.data == null || res.error as bool) {
       Navigator.of(context).pop();
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(MySnackBars.successSnackBar(
         "Familiar añadido con éxito.", "¡Excelentes noticias!"));
+    setState(() {
+      loadingPost = false;
+    });
     Navigator.of(context).pop();
     reload();
   }

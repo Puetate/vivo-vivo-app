@@ -8,6 +8,7 @@ class Person {
   String lastNames;
   String dni;
   dynamic avatar;
+  int? isAcceptedTerms;
   PersonInfo? personInfo;
   PersonDisability? personDisability;
   DateTime? updatedAt;
@@ -24,6 +25,7 @@ class Person {
     this.personInfo,
     this.createdAt,
     this.updatedAt,
+    this.isAcceptedTerms,
   });
 
   factory Person.fromJson(Map<String, dynamic> json) => Person(

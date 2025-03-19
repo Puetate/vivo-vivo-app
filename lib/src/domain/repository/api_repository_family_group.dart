@@ -6,6 +6,7 @@ abstract class ApiRepositoryFamilyMembersInterface {
   Future getFamilyGroupByUserInDanger(String familyMemberId);
   Future getAllFamilyGroupByUserId(String userId);
   Future getUserByDni(String dni);
-  Future postFamilyGroup(FamilyGroupRequest familyGroupRequest);
   Future getPolicesByUserMember(String userID);
+  Future postFamilyGroup(FamilyGroupRequest familyGroupRequest);
+  Future deleteFamilyGroupMember(String userID, String userFamilyMemberID);
 }

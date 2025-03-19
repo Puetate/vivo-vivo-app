@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.Dart';
+import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/link.dart';
 import 'package:vivo_vivo_app/src/commons/validators.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/person.dart';
@@ -23,6 +25,7 @@ class StepTwoRegisterView extends StatefulWidget {
 class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
   bool _loading = false;
   bool isSwitched = false;
+  bool isAcceptedTerms = false;
 
   TextEditingController userNameController = TextEditingController();
   TextEditingController phone = TextEditingController();
@@ -31,6 +34,8 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
   TextEditingController passwordConfirm = TextEditingController();
   TextEditingController address = TextEditingController();
   String textButtonSesion = "Registrarse";
+  final Uri termsAndConditionsUrl = Uri.parse(
+      'https://vivo-vivo-app-production.up.railway.app/terms-and-conditions');
   Person? personArguments;
   LatLng? directions;
 
@@ -267,6 +272,44 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                     return null;
                                   },
                                 ),
+                                const Gap(15),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Link(
+                                      uri: termsAndConditionsUrl,
+                                      target: LinkTarget.defaultTarget,
+                                      builder: (context, followLink) =>
+                                          TextButton(
+                                        style: TextButton.styleFrom(
+                                          visualDensity: VisualDensity.compact,
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: Size.zero,
+                                        ),
+                                        onPressed: followLink,
+                                        child: const Text(
+                                          "Términos y condiciones",
+                                          style: TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Checkbox.adaptive(
+                                          visualDensity: VisualDensity.compact,
+                                          value: isAcceptedTerms,
+                                          onChanged: (value) =>
+                                              acceptedTerms(value ?? false),
+                                        ),
+                                        const Text(
+                                            "Acepto los términos y condiciones"),
+                                      ],
+                                    ),
+                                  ],
+                                )
                               ]),
                         ),
                         const SizedBox(height: 20),
@@ -283,6 +326,9 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 15),
                                 ),
+                                onPressed: isAcceptedTerms
+                                    ? () => _showHomePage(context)
+                                    : null,
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -300,10 +346,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
                                         ),
                                       )
                                   ],
-                                ),
-                                onPressed: () {
-                                  _showHomePage(context);
-                                }),
+                                )),
                           ],
                         ),
                       ],
@@ -318,6 +361,10 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
     );
   }
 
+  void acceptedTerms(bool accepted) => setState(() {
+        isAcceptedTerms = accepted;
+      });
+
   void _showHomePage(context) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -327,6 +374,7 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
       });
       personArguments!.personInfo!.phone = phone.text;
       personArguments!.personInfo!.address = address.text;
+      personArguments!.isAcceptedTerms = isAcceptedTerms ? 1 : 0;
 
       FamilyGroup user = FamilyGroup(
         password: passwordConfirm.text,
@@ -338,7 +386,6 @@ class _StepTwoRegisterViewState extends State<StepTwoRegisterView> {
         personArguments!.personInfo!,
         personArguments!.personDisability,
       );
-      // ignore: unnecessary_null_comparison
       if (res == null || res.error) {
         setState(() {
           textButtonSesion = "Registrarse";

@@ -69,16 +69,13 @@ class Api {
             (error, stackTrace) => (ResponseResult(data: null, error: true)));
   }
 
-  static Future delete(String path, Map<String, dynamic> data) async {
-    final formData = FormData.fromMap(data);
-
-    try {
-      final resp = await _dio.delete(path, data: formData);
-      return resp.data;
-    } catch (e) {
-      ScaffoldMessenger.of(GlobalVariable.navigatorState.currentContext!)
-          .showSnackBar(MySnackBars.errorConnectionSnackBar());
-    }
+  static Future delete(String path, [Map<String, dynamic>? data]) async {
+    return await _dio
+        .delete(path)
+        .then((value) => (ResponseResult(data: value.data, error: false)))
+        .catchError((err) => (ResponseResult(data: '', error: true)))
+        .onError((error, stackTrace) =>
+            (ResponseResult(data: null, error: error ?? '')));
   }
 
   static void checkException(DioException e) {

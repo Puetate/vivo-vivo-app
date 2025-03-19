@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:vivo_vivo_app/src/domain/models/incident_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 
 class CardInformation extends StatefulWidget {
   final List<IncidentType> optionsIncidents;
+  final List<IncidentGroup>? incidentsGroups;
   final void Function(int incidentTypeID) onTap;
   final double size;
 
-  const CardInformation({
-    super.key,
-    required this.optionsIncidents,
-    required this.onTap,
-    required this.size,
-  });
+  const CardInformation(
+      {super.key,
+      required this.optionsIncidents,
+      required this.onTap,
+      required this.size,
+      this.incidentsGroups});
 
   @override
   State<CardInformation> createState() => _CardInformationState();
@@ -46,56 +47,82 @@ class _CardInformationState extends State<CardInformation> {
                     fontSize: 20,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                     height:
                         10), // Espacio entre el título y la lista de ChoiceChip
-                Wrap(
-                  spacing: 5, // Espacio entre los ChoiceChip
-                  children: List.generate(
-                    widget.optionsIncidents.length,
-                    (index) {
-                      return ChoiceChip(
-                        selectedColor: Styles.blue.withOpacity(0.7),
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            (_value == index)
-                                ? const Icon(Icons.check)
-                                : const SizedBox(),
-                            const SizedBox(
-                                width: 5), // Espacio entre el icono y el texto
-                            Flexible(
-                              child: Text(
-                                widget.optionsIncidents[index].incidentTypeName,
-                                style: const TextStyle(
-                                  fontSize: 14, // Tamaño de fuente deseado
-                                ),
-                                textAlign: TextAlign.left,
-                                softWrap: true,
-                                overflow: TextOverflow.visible,
-                                maxLines: 2,
-                              ),
-                            ),
-                          ],
+                // Iterar sobre los grupos
+                ...widget.incidentsGroups!.map((entry) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Mostrar el nombre del grupo
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          entry.incidentTypeHierarchyName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
-                        selected: _value == index,
-                        onSelected: (bool selected) {
-                          if (!selected) {
-                            _value = 0;
-                            widget.onTap(
-                                widget.optionsIncidents[0].incidentTypeId);
-                          } else {
-                            setState(() {
-                              _value = selected ? index : null;
-                            });
-                            widget.onTap(
-                                widget.optionsIncidents[index].incidentTypeId);
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+                      ),
+
+                      // Mostrar los ChoiceChip correspondientes al grupo
+                      Wrap(
+                        spacing: 5, // Espacio entre los ChoiceChip
+                        children: List.generate(
+                          entry.incidentTypes.length,
+                          (index) {
+                            final incident = entry.incidentTypes[index];
+                            return ChoiceChip(
+                              selectedColor: Styles.blue.withOpacity(0.7),
+                              label: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  (_value == incident.incidentTypeId)
+                                      ? const Icon(Icons.check)
+                                      : const SizedBox(),
+                                  const SizedBox(
+                                      width:
+                                          5), // Espacio entre el icono y el texto
+                                  Flexible(
+                                    child: Text(
+                                      incident.incidentTypeName,
+                                      style: const TextStyle(
+                                        fontSize:
+                                            14, // Tamaño de fuente deseado
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              selected: _value == incident.incidentTypeId,
+                              onSelected: (bool selected) {
+                                if (!selected) {
+                                  _value =
+                                      entry.incidentTypes[0].incidentTypeId;
+                                  widget.onTap(
+                                      entry.incidentTypes[0].incidentTypeId);
+                                } else {
+                                  setState(() {
+                                    _value = selected
+                                        ? incident.incidentTypeId
+                                        : null;
+                                  });
+                                  widget.onTap(incident.incidentTypeId);
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ],
             ),
           ),

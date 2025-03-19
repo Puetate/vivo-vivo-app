@@ -11,7 +11,7 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
 
   @override
   Future getPolicesByUserMember(String userID) async {
-    var res = await Api.httpGet("police-temporal-group/police-ids/$userID");
+    var res = await Api.httpGet("watchman-temporal-group/watchman-ids/$userID");
     return res;
   }
 
@@ -29,7 +29,7 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
 
   @override
   Future getAllFamilyGroupByUserId(String userId) async {
-    var res = await Api.httpGet("family-group/user/$userId");
+    var res = await Api.httpGet("family-group/user/$userId?state=1");
     return res;
   }
 
@@ -42,6 +42,12 @@ class ApiRepositoryFamilyGroupImpl extends ApiRepositoryFamilyMembersInterface {
   @override
   Future postFamilyGroup(FamilyGroupRequest familyGroupRequest) async {
     var res = await Api.post("family-group", familyGroupRequest.toJson());
+    return res;
+  }
+  
+  @override
+  Future deleteFamilyGroupMember(String userID, String userFamilyMemberID) async {
+    var res = await Api.delete("family-group/$userID/$userFamilyMemberID");
     return res;
   }
 }

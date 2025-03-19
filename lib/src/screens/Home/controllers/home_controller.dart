@@ -17,6 +17,7 @@ import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_user_impl
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_alarm_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/notification_family_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/Request/alarm.dart';
+import 'package:vivo_vivo_app/src/domain/models/incident_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/domain/models/send_alarm_data.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
@@ -29,7 +30,7 @@ import 'package:vivo_vivo_app/src/screens/Home/components/permission_dialog.dart
 import 'package:vivo_vivo_app/src/utils/snackbars.dart';
 
 String EVENT = "update-user-status";
-String EVENT_REQUEST_POSITION = "request-police-position";
+String EVENT_REQUEST_POSITION = "request-watchman-position";
 String DANGER = "DANGER";
 String MOBILE = "MOBILE";
 String OK = "OK";
@@ -92,6 +93,30 @@ class HomeController {
         .toList();
     int countIncidentsTypes = incidentTypes.length;
     SharedPrefs().incidentType = jsonEncode(res.data);
+    SharedPrefs().countIncidentType = countIncidentsTypes;
+  }
+
+  Future getIncidentGroup() async {
+    bool hasConnect = await checkConnectivity();
+    if (!hasConnect) return;
+
+    int storageCountIncidentType = SharedPrefs().countIncidentType;
+    var response = await userService.getCountIncidentType();
+    int requestCountIncidentType = response.data as int;
+    if (!(storageCountIncidentType <= 0) ||
+        requestCountIncidentType == storageCountIncidentType) return;
+
+    var res = await userService.getIncidentGroup();
+    if (res.data == null || res.error as bool) return;
+    List<IncidentGroup> incidentGrouped = (res.data as List)
+        .map(
+          (p) => IncidentGroup.fromJson(p),
+        )
+        .toList();
+    int countIncidentsTypes = incidentGrouped
+        .map((incident) => incident.incidentTypes.length)
+        .reduce((a, b) => a + b);
+    SharedPrefs().incidentGroup = jsonEncode(res.data);
     SharedPrefs().countIncidentType = countIncidentsTypes;
   }
 
@@ -169,7 +194,6 @@ class HomeController {
         .getFamilyGroupByUserInDanger(user.userID.toString());
     if (res == null || res.error) return;
     int count = res.data["count"];
-    log("$count count!");
     onStateGetAlerts(null, count);
   }
 
@@ -187,6 +211,7 @@ class HomeController {
 
   void initSendAlarm(bool isNewAlarm, bool hasPermission, UserAuth user,
       int incidentTypeID) async {
+    log(incidentTypeID.toString());
     bool isSendPosition =
         await startAlarm(isNewAlarm, hasPermission, user, incidentTypeID);
     if (!isSendPosition) {
@@ -195,6 +220,7 @@ class HomeController {
     }
     NotificationFamilyGroup notificationFamilyGroup =
         NotificationFamilyGroup(userID: user.userID, names: user.names);
+
     await notificationService
         .sendNotificationFamilyGroup(notificationFamilyGroup);
     alarmState.setIsSendLocation(true);
@@ -282,7 +308,7 @@ class HomeController {
     var res =
         await familyGroupService.getPolicesByUserMember(user.userID.toString());
     if (res == null || res.error) return List<int>.empty();
-    return res.data["policeIDs"].cast<int>();
+    return res.data["watchmanUserIDs"].cast<int>();
   }
 
   Future<List<int>> getFamilyGroupByUserMember(UserAuth user) async {

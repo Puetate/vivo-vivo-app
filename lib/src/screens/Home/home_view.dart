@@ -14,6 +14,7 @@ import 'package:location/location.dart' as LC;
 import 'package:vivo_vivo_app/src/commons/commons.dart';
 import 'package:vivo_vivo_app/src/commons/permissions.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_notification_impl.dart';
+import 'package:vivo_vivo_app/src/domain/models/incident_group.dart';
 import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
@@ -57,6 +58,7 @@ class _HomeViewState extends State<HomeView> {
   int countSocket = 0;
   int count = 0;
   List<IncidentType> _incidentTypes = [];
+  List<IncidentGroup> _incidentGroups = [];
   int _selectedIncidentType = 0;
 
   @override
@@ -70,17 +72,18 @@ class _HomeViewState extends State<HomeView> {
         (userAlerts, count) => setUserAlerts(userAlerts, count);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       homeController.openStateUser(user);
+      homeController
+          .getIncidentGroup()
+          .whenComplete(() => getIncidentGrouped());
     });
     homeController.getUsersAlerts();
     initPlatform(context);
     onAlerts();
-    homeController.getIncidentType();
-    // homeController.openPermissionLocations();
-    getIncidentTypes();
   }
 
   void getIncidentTypes() {
     String resString = SharedPrefs().incidentType;
+    if (resString.isEmpty) return;
     List<IncidentType> incidentTypes = (jsonDecode(resString) as List)
         .map(
           (p) => IncidentType.fromJson(p),
@@ -88,6 +91,19 @@ class _HomeViewState extends State<HomeView> {
         .toList();
     setState(() {
       _incidentTypes = incidentTypes;
+    });
+  }
+
+  void getIncidentGrouped() {
+    String resString = SharedPrefs().incidentGroup;
+    if (resString.isEmpty) return;
+    List<IncidentGroup> incidentGroup = (jsonDecode(resString) as List)
+        .map(
+          (p) => IncidentGroup.fromJson(p),
+        )
+        .toList();
+    setState(() {
+      _incidentGroups = incidentGroup;
     });
   }
 
@@ -332,13 +348,15 @@ class _HomeViewState extends State<HomeView> {
                   child: SizedBox(
                     height: size.height * 0.26,
                     child: CardInformation(
-                        optionsIncidents: _incidentTypes,
-                        onTap: (incidentTypeID) {
-                          setState(() {
-                            _selectedIncidentType = incidentTypeID;
-                          });
-                        },
-                        size: 400),
+                      incidentsGroups: _incidentGroups,
+                      optionsIncidents: _incidentTypes,
+                      onTap: (incidentTypeID) {
+                        setState(() {
+                          _selectedIncidentType = incidentTypeID;
+                        });
+                      },
+                      size: 400,
+                    ),
                   ))
             ],
           ),

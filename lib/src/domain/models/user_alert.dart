@@ -15,12 +15,14 @@ class UserAlert {
   int userID;
   String avatar;
   String names;
+  String phone;
   String status;
 
   UserAlert({
     required this.userID,
     required this.avatar,
     required this.names,
+    required this.phone,
     required this.status,
   });
 
@@ -28,6 +30,7 @@ class UserAlert {
         userID: json["userID"],
         avatar: "$HOST${json["avatar"]}",
         names: json["names"],
+        phone: json["phone"],
         status: json["status"],
       );
 
@@ -35,6 +38,7 @@ class UserAlert {
         "userID": userID,
         "avatar": avatar,
         "names": names,
+        "phone": phone,
         "status": status,
       };
 }

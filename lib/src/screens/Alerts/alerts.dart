@@ -27,11 +27,8 @@ class _AlertsState extends State<Alerts> {
     var res = await familyGroupService.getFamilyGroupByUserId(userId);
 
     if (res.data == null || res.error as bool) return List<UserAlert>.empty();
-    List<UserAlert> usersAlerts = (res.data as List)
-        .map(
-          (p) => UserAlert.fromJson(p),
-        )
-        .toList();
+    List<UserAlert> usersAlerts =
+        (res.data as List).map((p) => UserAlert.fromJson(p)).toList();
     return usersAlerts;
   }
 

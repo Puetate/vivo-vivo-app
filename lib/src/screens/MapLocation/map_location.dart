@@ -29,6 +29,7 @@ class _LocationMapState extends State<LocationMap> {
   late UserAuth user;
   late IO.Socket socket;
   late Map<MarkerId, Marker> _markers;
+  Set<Circle> _circles = {};
   late MapLocationController mapLocationController;
   Completer<GoogleMapController> _controllerMap = Completer();
   // Map<PolylineId, Polyline> polylines = {};
@@ -105,6 +106,7 @@ class _LocationMapState extends State<LocationMap> {
                     target: LatLng(-1.273798, -78.645353),
                     zoom: 10,
                   ),
+                  circles: _circles,
                   mapType: MapType.normal,
                   onMapCreated: (GoogleMapController controller) {
                     _controllerMap.complete(controller);
@@ -252,7 +254,8 @@ class _LocationMapState extends State<LocationMap> {
     }
 
     destinationPosition = Marker(
-      markerId: MarkerId("destination"),
+      anchor: const Offset(0.5, 0.5),
+      markerId: const MarkerId("destination"),
       icon: imgDestination,
       position: LatLng(
         latLng["lat"],
@@ -262,6 +265,15 @@ class _LocationMapState extends State<LocationMap> {
     if (mounted) {
       setState(() {
         _markers[const MarkerId("destination")] = destinationPosition;
+        _circles = {
+          Circle(
+            strokeWidth: 2,
+            fillColor: Colors.lightBlue.shade100,
+            circleId: CircleId(user.userID.toString()),
+            center: LatLng(latLng["lat"], latLng["lng"]),
+            radius: 7.5,
+          )
+        };
       });
     }
   }

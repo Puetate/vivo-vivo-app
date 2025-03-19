@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 import 'package:http_parser/http_parser.dart';
 
@@ -56,7 +57,10 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
     Map<String, String> userData = {
       "email": user.email,
       "password": user.password,
+      'isAcceptedTerms': person.isAcceptedTerms.toString()
     };
+    log(person.isAcceptedTerms.toString());
+
     Map<String, dynamic> data;
     if (personDisability == null) {
       data = {
@@ -99,7 +103,13 @@ class ApiRepositoryUserImpl extends ApiRepositoryUserInterface {
     var res = await Api.httpGet("incident-type");
     return res;
   }
-  
+
+  @override
+  Future getIncidentGroup() async {
+    var res = await Api.httpGet("incident-type-hierarchy/with-incidents");
+    return res;
+  }
+
   @override
   Future getCountIncidentType() async {
     var res = await Api.httpGet("incident-type/count");
