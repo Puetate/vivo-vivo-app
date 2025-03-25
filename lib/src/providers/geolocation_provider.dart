@@ -47,6 +47,7 @@ class GeoLocationProvider with ChangeNotifier {
   }
 
   Future<void> stopListen() async {
+    location.enableBackgroundMode(enable: false);
     await locationSubscription?.cancel();
     isSendLocation = false;
     locationSubscription = null;

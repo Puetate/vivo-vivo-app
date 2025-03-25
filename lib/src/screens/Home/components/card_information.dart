@@ -23,6 +23,12 @@ class CardInformation extends StatefulWidget {
 
 class _CardInformationState extends State<CardInformation> {
   int? _value = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.optionsIncidents.first.incidentTypeId;
+  }
   @override
   Widget build(BuildContext context) {
     final Size sizeLayout = AppLayout.getSize(context);

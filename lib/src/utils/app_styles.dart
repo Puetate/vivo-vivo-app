@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Styles {
-  static Color primaryColor = const Color.fromRGBO(56, 56, 76, 1);
-  static Color primaryColorGradient = const Color.fromRGBO(0, 150, 136, 1);
-  static Color secondaryColorGradient = const Color.fromRGBO(56, 56, 76, 1);
+  static Color primaryColor = const Color.fromRGBO(167, 3, 4, 1);
+  static Color primaryColorGradient = const Color.fromRGBO(255, 9, 45, 1);
+  static Color secondaryColorGradient = const Color.fromRGBO(215, 5, 5, 1);
   static Color? secondaryColor = Colors.blueGrey[800];
   static Color white = Colors.white;
   static Color black = Colors.black;

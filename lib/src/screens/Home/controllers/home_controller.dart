@@ -268,6 +268,7 @@ class HomeController {
         onTapBringToFront: true);
     geoLocationProvider.setIsSendLocation = true;
     if (SharedPrefs().familyGroupIds.isEmpty) return;
+    location.enableBackgroundMode(enable: true);
     List<int> familyGroupsIds =
         jsonDecode(SharedPrefs().familyGroupIds).cast<int>();
     var locationSubscription =
