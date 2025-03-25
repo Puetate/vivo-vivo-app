@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:vivo_vivo_app/src/domain/models/incident_group.dart';
-import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/utils/app_layout.dart';
 import 'package:vivo_vivo_app/src/utils/app_styles.dart';
 
 class CardInformation extends StatefulWidget {
-  final List<IncidentType> optionsIncidents;
   final List<IncidentGroup>? incidentsGroups;
   final void Function(int incidentTypeID) onTap;
   final double size;
 
   const CardInformation(
       {super.key,
-      required this.optionsIncidents,
       required this.onTap,
       required this.size,
       this.incidentsGroups});
@@ -25,10 +22,22 @@ class _CardInformationState extends State<CardInformation> {
   int? _value = 0;
 
   @override
-  void initState() {
-    super.initState();
-    _value = widget.optionsIncidents.first.incidentTypeId;
+  void didUpdateWidget(covariant CardInformation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Verificar si hay grupos y tipos de incidentes
+    if (widget.incidentsGroups != null &&
+        widget.incidentsGroups!.isNotEmpty &&
+        widget.incidentsGroups!.first.incidentTypes.isNotEmpty &&
+        _value == 0) {
+      // Seleccionar por defecto el primer IncidentType
+      _value = widget.incidentsGroups!.first.incidentTypes.first.incidentTypeId;
+      // Notificar la selección inicial
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onTap(_value!);
+      });
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     final Size sizeLayout = AppLayout.getSize(context);

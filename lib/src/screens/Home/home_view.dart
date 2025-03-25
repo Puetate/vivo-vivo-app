@@ -15,7 +15,6 @@ import 'package:vivo_vivo_app/src/commons/commons.dart';
 import 'package:vivo_vivo_app/src/commons/permissions.dart';
 import 'package:vivo_vivo_app/src/data/datasource/mongo/api_repository_notification_impl.dart';
 import 'package:vivo_vivo_app/src/domain/models/incident_group.dart';
-import 'package:vivo_vivo_app/src/domain/models/incident_type.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_alert.dart';
 import 'package:vivo_vivo_app/src/domain/models/user_auth.dart';
 import 'package:vivo_vivo_app/src/providers/alarm_state_provider.dart';
@@ -57,7 +56,6 @@ class _HomeViewState extends State<HomeView> {
   bool isSendLocation = false;
   int countSocket = 0;
   int count = 0;
-  List<IncidentType> _incidentTypes = [];
   List<IncidentGroup> _incidentGroups = [];
   int _selectedIncidentType = 0;
 
@@ -79,19 +77,6 @@ class _HomeViewState extends State<HomeView> {
     homeController.getUsersAlerts();
     initPlatform(context);
     onAlerts();
-  }
-
-  void getIncidentTypes() {
-    String resString = SharedPrefs().incidentType;
-    if (resString.isEmpty) return;
-    List<IncidentType> incidentTypes = (jsonDecode(resString) as List)
-        .map(
-          (p) => IncidentType.fromJson(p),
-        )
-        .toList();
-    setState(() {
-      _incidentTypes = incidentTypes;
-    });
   }
 
   void getIncidentGrouped() {
@@ -349,7 +334,6 @@ class _HomeViewState extends State<HomeView> {
                     height: size.height * 0.26,
                     child: CardInformation(
                       incidentsGroups: _incidentGroups,
-                      optionsIncidents: _incidentTypes,
                       onTap: (incidentTypeID) {
                         setState(() {
                           _selectedIncidentType = incidentTypeID;
@@ -388,9 +372,7 @@ class _HomeViewState extends State<HomeView> {
     if (mounted) {
       hasPermission = await Permissions.checkPermission(context);
     }
-    if (_selectedIncidentType == 0) {
-      _selectedIncidentType = _incidentTypes[0].incidentTypeId;
-    }
+
     homeController.initSendAlarm(
         isNewAlarm, hasPermission, user, _selectedIncidentType);
   }
